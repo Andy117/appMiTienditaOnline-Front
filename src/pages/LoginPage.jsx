@@ -1,27 +1,45 @@
 import React from "react"
+import { useAuth } from "../context/AuthContext"
+import LoginForm from "../components/LoginForm"
+import axios from "axios"
 import { useNavigate } from "react-router-dom"
-import authService from "../services/authService.js"
-import LoginForm from '../components/LoginForm.jsx'
+import authService from "../services/authService"
 
-const LoginPage = () => {
+const decodeBase64 = (str) => {
+    // Replace characters for Base64 decoding
+    str = str.replace(/-/g, '+').replace(/_/g, '/');
+    // Add padding if necessary
+    while (str.length % 4) {
+        str += '=';
+    }
+    return JSON.parse(atob(str));
+};
+
+const Login = () => {
+    const { login } = useAuth()
     const navigate = useNavigate()
 
-    const handleLogin = async (data) => {
+    const handleSubmit = async (data) => {
         try {
             const response = await authService.login(data)
-            localStorage.setItem('token', response.data.token)
-            navigate('/dashboard')
+            const token = response.data.token
+
+            login(token)
+
+            const decodedToken = decodeBase64(token.split('.')[1])
+            console.log(decodedToken)
+            navigate(decodedToken.rol_id === 1 ? '/operador' : '/cliente')
         } catch (error) {
-            console.error('Error al iniciar sesion....', error.response?.data?.message || error.message)
+            console.error('Error al iniciar sesion...', error.response?.data?.message || 'Ocurrio un error...')
+            alert('Credenciales incorrectas o problemas en el servidor.')
         }
     }
 
     return (
-        <div>
-            <h1>Iniciar Sesion</h1>
-            <LoginForm onSubmit= {handleLogin}/>
+        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+            <LoginForm onSubmit={handleSubmit}/>
         </div>
     )
 }
 
-export default LoginPage
+export default Login
