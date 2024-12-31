@@ -7,6 +7,8 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Login from './pages/LoginPage.jsx'
 import HomeCliente from './pages/HomeCliente.jsx'
 import HomeOperador from './pages/HomeOperador.jsx'
+import OperatorDashboard from './components/OperatorDashboard.jsx'
+import OrderDetails from './components/OrderDetails.jsx'
 
 function App() {
   return (
@@ -22,7 +24,12 @@ function App() {
           } />
           <Route path='/operador' element={
             <ProtectedRoute roles={[1]}>
-              <HomeOperador />
+              <OperatorDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path='/orders/:orderId' element={
+            <ProtectedRoute roles={[1]}>
+              <OrderDetails />
             </ProtectedRoute>
           } />
         </Routes>
