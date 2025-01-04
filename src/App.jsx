@@ -9,6 +9,8 @@ import HomeCliente from './pages/HomeCliente.jsx'
 import HomeOperador from './pages/HomeOperador.jsx'
 import OperatorDashboard from './components/OperatorDashboard.jsx'
 import OrderDetails from './components/OrderDetails.jsx'
+import ProductTable from './components/ProductOperator.jsx'
+import AgregarProducto from './components/AgregarProducto.jsx'
 
 function App() {
   return (
@@ -30,6 +32,16 @@ function App() {
           <Route path='/orders/:orderId' element={
             <ProtectedRoute roles={[1]}>
               <OrderDetails />
+            </ProtectedRoute>
+          } />
+          <Route path='/productos' element={
+            <ProtectedRoute roles={[1]}>
+              <ProductTable />
+            </ProtectedRoute>
+          } />
+          <Route path='/AgregarProducto' element={
+            <ProtectedRoute roles={[1]}>
+              <AgregarProducto />
             </ProtectedRoute>
           } />
         </Routes>
