@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Plus, ChevronLeftCircle, Edit } from 'lucide-react';
+import AdminHeader from './AdminHeader';
 
 const ProductTable = () => {
     const [products, setProducts] = useState([]);
@@ -42,11 +43,15 @@ const ProductTable = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
-            <div className="container mx-auto px-4">
+        <div className="min-h-screen bg-gray-50">
+            <div className="container mx-auto px-4 py-6">
+                <AdminHeader
+                    h1='Panel de Control - Operador'
+                    span='Panel de: Productos'
+                />
                 {/* Header y Botones */}
-                <div className="mb-8">
-                    <div className="flex justify-between items-center mb-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div className="p-4 flex justify-between items-center">
                         <h1 className="text-2xl font-bold text-gray-800">
                             Gestión de Productos
                             <span className="block text-sm font-normal text-gray-500 mt-1">
@@ -55,7 +60,7 @@ const ProductTable = () => {
                         </h1>
                         <div className="flex gap-3">
                             <button
-                                onClick={() => navigate('/operador')}
+                                onClick={() => navigate('/inicio')}
                                 className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                             >
                                 <ChevronLeftCircle className="w-4 h-4" />

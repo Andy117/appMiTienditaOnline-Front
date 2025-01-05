@@ -3,20 +3,11 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { LogOut, Eye, LayoutGrid, Package, Tags, Building2, Ruler, Users, UserCircle } from 'lucide-react'
+import AdminHeader from './AdminHeader'
 
 const OperatorDashboard = () => {
     const [orders, setOrders] = useState([])
     const navigate = useNavigate()
-
-    const navigationItems = [
-        { name: 'Productos', icon: Package },
-        { name: 'Categorias', icon: LayoutGrid },
-        { name: 'Marcas', icon: Tags },
-        { name: 'Unidades de Medida', icon: Ruler },
-        { name: 'Presentaciones', icon: Building2 },
-        { name: 'Clientes', icon: Users },
-        { name: 'Usuarios', icon: UserCircle }
-    ]
 
     const getStatusColor = (status) => {
         const statusColors = {
@@ -46,11 +37,6 @@ const OperatorDashboard = () => {
         fetchOrders()
     }, [])
 
-    const handleLogout = () => {
-        localStorage.removeItem('token')
-        navigate('/login')
-    }
-
     const handleViewOrder = (orderId) => {
         navigate(`/orders/${orderId}`)
     }
@@ -58,37 +44,10 @@ const OperatorDashboard = () => {
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="container mx-auto px-4 py-6">
-                {/* Header */}
-                <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800">
-                        Panel de Control
-                        <span className="block text-sm font-normal text-gray-500 mt-1">
-                            Bienvenido al panel de operador
-                        </span>
-                    </h1>
-                    <button
-                        onClick={handleLogout}
-                        className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                    >
-                        <LogOut className="w-4 h-4" />
-                        Cerrar Sesión
-                    </button>
-                </div>
-
-                {/* Navigation Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
-                    {navigationItems.map(({ name, icon: Icon }) => (
-                        <button
-                            key={name}
-                            onClick={() => navigate(`/${name.toLowerCase()}`)}
-                            className="flex flex-col items-center gap-2 p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100"
-                        >
-                            <Icon className="w-6 h-6 text-blue-600" />
-                            <span className="text-sm font-medium text-gray-700">{name}</span>
-                        </button>
-                    ))}
-                </div>
-
+                <AdminHeader
+                    h1='Panel de Control - Operador'
+                    span='Bienvenido al panel de Operador'
+                />
                 {/* Orders Table */}
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div className="p-4 border-b border-gray-200">

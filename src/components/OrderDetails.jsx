@@ -7,7 +7,7 @@ import { ChevronLeft, Plus, Minus, Trash2 } from "lucide-react"
 const OrderDetails = () => {
     const navigate = useNavigate()
     const [order, setOrder] = useState(null)
-    const [estado, setEstado] = useState()
+    const [estado, setEstado] = useState('')
     const [loading, setLoading] = useState(false)
     const { orderId } = useParams()
 
@@ -65,74 +65,10 @@ const OrderDetails = () => {
         }
     }
 
-    const handleItemQuantityChange = async (itemId, quantity) => {
-        const token = localStorage.getItem('token')
-        try {
-            setLoading(true)
-            const updatedDetalles = order.DetallesOrden.map((item) =>
-                item.DetalleID === itemId ? { ...item, cantidad: quantity } : item
-            )
-
-            await axios.put(`http://localhost:1234/api/orders/${orderId}`, {
-                DetallesJSON: updatedDetalles,
-                total_orden: updatedDetalles.reduce((sum, item) => sum + item.cantidad * item.ProductoPrecio, 0)
-            },
-
-                { headers: { Authorization: `Bearer ${token}` } }
-            )
-            setOrder({ ...order, DetallesOrden: updatedDetalles })
-        } catch (error) {
-            console.error('Error al actualizar la cantidad del item', error)
-            alert('Hubo un problema al actualizar la cantidad')
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const handleAddItem = async (newItem) => {
-        const token = localStorage.getItem('token')
-        try {
-            setLoading(true);
-            const updatedDetalles = [...order.DetallesOrden, newItem]
-            await axios.put(`http://localhost:1234/api/orders/${orderId}`, {
-                DetallesJSON: updatedDetalles,
-                total_orden: updatedDetalles.reduce((sum, item) => sum + item.cantidad * item.ProductoPrecio, 0)
-            },
-                { headers: { Authorization: `Bearer ${token}` } }
-            )
-            setOrder({ ...order, DetallesOrden: updatedDetalles })
-        } catch (error) {
-            console.error('Error al agregar un nuevo ítem:', error);
-            alert('Hubo un problema al agregar el ítem.');
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    const handleRemoveItem = async (itemId) => {
-        const token = localStorage.getItem('token')
-        try {
-            setLoading(true)
-            const updatedDetalles = order.DetallesOrden.filter((item) => item.DetalleID !== itemId)
-            await axios.patch(`http://localhost:1234/api/orders/${orderId}`, {
-                DetallesJSON: updatedDetalles,
-                totalOrden: updatedDetalles.reduce((sum, item) => sum + item.cantidad * item.ProductoPrecio, 0),
-            },
-                { headers: { Authorization: `Bearer ${token}` } }
-            )
-            setOrder({ ...order, DetallesOrden: updatedDetalles })
-        } catch (error) {
-            console.error('Error al eliminar el ítem:', error)
-            alert('Hubo un problema al eliminar el ítem.')
-        } finally {
-            setLoading(false)
-        }
-    };
-
     return (
         <div className="container mx-auto p-6 max-w-6xl">
             <button
-                onClick={() => navigate('/operador')}
+                onClick={() => navigate('/inicio')}
                 className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-6 transition-colors"
             >
                 <ChevronLeft className="w-4 h-4" />
@@ -183,7 +119,7 @@ const OrderDetails = () => {
                             onChange={(e) => setEstado(Number(e.target.value))}
                             className="border rounded-lg px-4 py-2 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
-                            <option value="" disabled selected>Seleccione una opcion</option>
+                            <option value="" disabled>Seleccione una opción</option>
                             <option value={3}>Pendiente</option>
                             <option value={4}>Aprobado</option>
                             <option value={5}>Rechazado</option>
