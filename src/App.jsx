@@ -10,7 +10,11 @@ import HomeOperador from './pages/HomeOperador.jsx'
 import OperatorDashboard from './components/OperatorDashboard.jsx'
 import OrderDetails from './components/OrderDetails.jsx'
 import ProductTable from './components/ProductOperator.jsx'
-import AgregarProducto from './components/AgregarProducto.jsx'
+import AgregarProducto from './pages/AgregarProducto.jsx'
+import CategoriasProducto from './pages/CategoriasProducto.jsx'
+import MarcasProducto from './pages/MarcasProducto.jsx'
+import UnidadesMedida from './pages/UnidadesMedida.jsx'
+import PresentacionProducto from './pages/PresentacionProducto.jsx'
 
 function App() {
   return (
@@ -24,7 +28,7 @@ function App() {
               <HomeCliente />
             </ProtectedRoute>
           } />
-          <Route path='/operador' element={
+          <Route path='/inicio' element={
             <ProtectedRoute roles={[1]}>
               <OperatorDashboard />
             </ProtectedRoute>
@@ -42,6 +46,26 @@ function App() {
           <Route path='/AgregarProducto' element={
             <ProtectedRoute roles={[1]}>
               <AgregarProducto />
+            </ProtectedRoute>
+          } />
+          <Route path='/categorias' element={
+            <ProtectedRoute roles={[1]}>
+              <CategoriasProducto />
+            </ProtectedRoute>
+          } />
+          <Route path='/marcas' element={
+            <ProtectedRoute roles={[1]}>
+              <MarcasProducto />
+            </ProtectedRoute>
+          } />
+          <Route path='/unidadesmedida' element={
+            <ProtectedRoute roles={[1]}>
+              <UnidadesMedida />
+            </ProtectedRoute>
+          } />
+          <Route path='/presentaciones' element={
+            <ProtectedRoute roles={[1]}>
+              <PresentacionProducto />
             </ProtectedRoute>
           } />
         </Routes>
