@@ -6,7 +6,6 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Login from './pages/LoginPage.jsx'
 import HomeCliente from './pages/HomeCliente.jsx'
-import HomeOperador from './pages/HomeOperador.jsx'
 import OperatorDashboard from './components/OperatorDashboard.jsx'
 import OrderDetails from './components/OrderDetails.jsx'
 import ProductTable from './components/ProductOperator.jsx'
@@ -15,6 +14,9 @@ import CategoriasProducto from './pages/CategoriasProducto.jsx'
 import MarcasProducto from './pages/MarcasProducto.jsx'
 import UnidadesMedida from './pages/UnidadesMedida.jsx'
 import PresentacionProducto from './pages/PresentacionProducto.jsx'
+import EditarProducto from './pages/EditarProducto.jsx'
+import ClientesAdmin from './pages/ClientesAdmin.jsx'
+import UsersAdmin from './pages/UsersAdmin.jsx'
 
 function App() {
   return (
@@ -66,6 +68,21 @@ function App() {
           <Route path='/presentaciones' element={
             <ProtectedRoute roles={[1]}>
               <PresentacionProducto />
+            </ProtectedRoute>
+          } />
+          <Route path='/EditarProducto/:id' element={
+            <ProtectedRoute roles={[1]}>
+              <EditarProducto />
+            </ProtectedRoute>
+          } />
+          <Route path='/clientes' element={
+            <ProtectedRoute roles={[1]}>
+              <ClientesAdmin />
+            </ProtectedRoute>
+          } />
+          <Route path='/usuarios' element={
+            <ProtectedRoute roles={[1]}>
+              <UsersAdmin />
             </ProtectedRoute>
           } />
         </Routes>
