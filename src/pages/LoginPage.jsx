@@ -1,14 +1,13 @@
-import React from "react"
+import React, { useState } from "react"
 import { useAuth } from "../context/AuthContext"
 import LoginForm from "../components/LoginForm"
-import axios from "axios"
+import RegisterForm from "../components/RegisterForm"
 import { useNavigate } from "react-router-dom"
 import authService from "../services/authService"
 
 const decodeBase64 = (str) => {
-    // Replace characters for Base64 decoding
+
     str = str.replace(/-/g, '+').replace(/_/g, '/');
-    // Add padding if necessary
     while (str.length % 4) {
         str += '=';
     }
@@ -16,6 +15,7 @@ const decodeBase64 = (str) => {
 };
 
 const Login = () => {
+    const [showRegister, setShowRegister] = useState(null)
     const { login } = useAuth()
     const navigate = useNavigate()
 
@@ -28,16 +28,33 @@ const Login = () => {
 
             const decodedToken = decodeBase64(token.split('.')[1])
             console.log(decodedToken)
-            navigate(decodedToken.rol_id === 1 ? '/operador' : '/cliente')
+            navigate(decodedToken.rol_id === 1 ? '/inicio' : '/cliente')
         } catch (error) {
             console.error('Error al iniciar sesion...', error.response?.data?.message || 'Ocurrio un error...')
             alert('Credenciales incorrectas o problemas en el servidor.')
         }
     }
 
+    const handleRegistrationSuccess = () => {
+        setShowRegister(false)
+        alert('Registro exitoso. Ahora puedes iniciar sesion.')
+    }
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <LoginForm onSubmit={handleSubmit}/>
+            <div className="w-full max-w-lg">
+                {showRegister ? (
+                    <RegisterForm onSuccess={handleRegistrationSuccess}
+                        textBottom={showRegister ? 'Ya tienes cuenta? Inicia sesion' : 'No tienes cuenta? - Registrate :D'}
+                        onClick={() => setShowRegister(!showRegister)}
+                    />
+                ) : (
+                    <LoginForm onSubmit={handleSubmit}
+                        textBottom={showRegister ? 'Ya tienes cuenta? Inicia sesion' : 'No tienes cuenta? - Registrate :D'}
+                        onClick={() => setShowRegister(!showRegister)}
+                    />
+                )}
+            </div>
         </div>
     )
 }
