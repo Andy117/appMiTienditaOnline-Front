@@ -81,16 +81,11 @@ const AgregarProducto = () => {
                     precioProducto: Number(values.precioProducto)
                 }
 
-                // Si hay una imagen, usa FormData
                 if (values.imagenProducto) {
                     const formData = new FormData()
-
-                    // Agregar todos los campos como string del objeto JSON
                     Object.keys(productData).forEach(key => {
                         formData.append(key, productData[key])
                     })
-
-                    // Agregar la imagen
                     formData.append('imagenProducto', values.imagenProducto)
 
                     await axios.post('http://localhost:1234/api/products', formData, {
@@ -100,7 +95,6 @@ const AgregarProducto = () => {
                         }
                     })
                 } else {
-                    // Si no hay imagen, enviar directamente como JSON
                     await axios.post('http://localhost:1234/api/products', productData, {
                         headers: {
                             Authorization: `Bearer ${token}`,
