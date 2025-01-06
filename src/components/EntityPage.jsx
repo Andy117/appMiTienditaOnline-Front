@@ -55,10 +55,10 @@ const EntityPage = ({ entityName, apiUrl, fields, keyID, type }) => {
                         await axios.put(`${apiUrl}/${editingItem[keyID]}`, values, {
                             headers: { Authorization: `Bearer ${token}` }
                         })
-                        alert('Categoria editada con exito!')
+                        alert(`${entityName} editada con exito!`)
                     } catch (error) {
-                        console.error('Error al editar la categoria', error)
-                        alert('Hubo un error, la categoria ya existe...')
+                        console.error(`Error al editar la ${entityName}`, error)
+                        alert(`Hubo un error, la ${entityName} ya existe...`)
                     }
 
                 } else if (deactivatingItem) {
@@ -66,20 +66,20 @@ const EntityPage = ({ entityName, apiUrl, fields, keyID, type }) => {
                         await axios.patch(`${apiUrl}/${deactivatingItem[keyID]}`, values, {
                             headers: { Authorization: `Bearer ${token}` }
                         })
-                        alert('Categoria desactivado con exito!')
+                        alert(`${entityName} desactivado con exito!`)
                     } catch (error) {
-                        console.error('Error al desactivar la categoria', error)
-                        alert('Hubo un error, al intentar desactivar la categoria...')
+                        console.error(`Error al desactivar la ${entityName}`, error)
+                        alert(`Hubo un error, al intentar desactivar la ${entityName}...`)
                     }
                 } else if (activatingItem) {
                     try {
                         await axios.patch(`${apiUrl}/activate/${activatingItem[keyID]}`, values, {
                             headers: { Authorization: `Bearer ${token}` }
                         })
-                        alert('Categoria Activada con exito!')
+                        alert(`${entityName} Activada con exito!`)
                     } catch (error) {
-                        console.error('Error al Activar la categoria', error)
-                        alert('Hubo un error, al intentar activar la categoria...')
+                        console.error(`Error al Activar la ${entityName}`, error)
+                        alert(`Hubo un error, al intentar activar la ${entityName}...`)
                     }
                 }
                 else {
@@ -87,16 +87,16 @@ const EntityPage = ({ entityName, apiUrl, fields, keyID, type }) => {
                         await axios.post(apiUrl, values, {
                             headers: { Authorization: `Bearer ${token}` }
                         })
-                        alert('Categoria agregada con exito!')
+                        alert(`${entityName} agregada con exito!`)
                     } catch (error) {
-                        console.error('Error al agregar la categoria', error)
-                        alert('Hubo un error, la categoria ya existe..')
+                        console.error(`Error al agregar la ${entityName}`, error)
+                        alert(`Hubo un error, la ${entityName} ya existe..`)
                     }
                 }
                 setIsModalOpen(false)
                 setEditingItem(null)
                 setCurrentPage(1)
-                location.reload()
+
             } catch (error) {
                 console.error('Error al realizar la operacion solicitada...:', error);
             }
