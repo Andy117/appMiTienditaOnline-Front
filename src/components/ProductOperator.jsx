@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Plus, ChevronLeftCircle, Edit } from 'lucide-react';
-import AdminHeader from './AdminHeader';
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+import { useNavigate, useParams } from 'react-router-dom'
+import { ChevronLeft, ChevronRight, Plus, ChevronLeftCircle, Edit, CheckCircle, Trash } from 'lucide-react'
+import AdminHeader from './AdminHeader'
 
 const ProductTable = () => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalProducts, setTotalProducts] = useState(0);
-    const productsPerPage = 15;
-    const navigate = useNavigate();
+    const [products, setProducts] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [currentPage, setCurrentPage] = useState(1)
+    const [totalProducts, setTotalProducts] = useState(0)
+    const productsPerPage = 15
+    const navigate = useNavigate()
+    const [deactivatingItem, setDeactivatingItem] = useState(null)
+    const [activatingItem, setActivatingItem] = useState(null)
+    const { id } = useParams()
 
     const fetchProducts = async (page = 1) => {
         try {
@@ -26,21 +29,52 @@ const ProductTable = () => {
         } catch (error) {
             console.error('Error al obtener los productos:', error);
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
+
+    const handleActivate = async (id) => {
+        if (window.confirm('Estas seguro que deseas activar este producto?')) {
+            try {
+                const token = localStorage.getItem('token')
+                await axios.patch(`http://localhost:1234/api/products/activate/${id}`, {}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+                alert('Producto activado exitosamente...')
+                fetchProducts(currentPage)
+            } catch (error) {
+                console.error('Error al activar el producto...', error)
+                alert('Hubo un error al activar el producto.')
+            }
+        }
+    }
+    const handleDeactivate = async (id) => {
+        if (window.confirm('Estas seguro que deseas desactivar este producto?')) {
+            try {
+                const token = localStorage.getItem('token')
+                await axios.patch(`http://localhost:1234/api/products/${id}`, {}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+                alert('Producto desactivado exitosamente...')
+                fetchProducts(currentPage)
+            } catch (error) {
+                console.error('Error al desactivado el producto...', error)
+                alert('Hubo un error al desactivado el producto.')
+            }
+        }
+    }
 
     useEffect(() => {
-        fetchProducts(currentPage);
-    }, [currentPage]);
+        fetchProducts(currentPage)
+    }, [currentPage])
 
-    const totalPages = Math.ceil(totalProducts / productsPerPage);
+    const totalPages = Math.ceil(totalProducts / productsPerPage)
 
     const handlePageChange = (page) => {
         if (page > 0 && page <= totalPages) {
-            setCurrentPage(page);
+            setCurrentPage(page)
         }
-    };
+    }
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -89,9 +123,10 @@ const ProductTable = () => {
                                 <table className="w-full">
                                     <thead>
                                         <tr className="bg-gray-50 text-left">
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+
                                             <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
                                             <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
+                                            <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                                             <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
                                             <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
                                             <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
@@ -100,29 +135,62 @@ const ProductTable = () => {
                                     <tbody className="divide-y divide-gray-200">
                                         {products.map((product) => (
                                             <tr key={product.idProductos} className="hover:bg-gray-50">
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    #{product.idProductos}
-                                                </td>
+
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                     {product.nombre}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
                                                     {product.descripcion}
                                                 </td>
+                                                <td className="px-6 py-4 text-sm text-gray-500 max-w-xs ">
+                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.estados_idEstados === 2
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : 'bg-red-100 text-red-800'
+                                                        }`}>
+                                                        {product.estados_idEstados === 2 ? 'Activo' : 'Inactivo'}
+                                                    </span>
+                                                </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    {product.stock}
+                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.stock > 25
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : product.stock > 5 ? 'bg-orange-100 text-orange-800' : 'bg-red-100 text-red-800'
+                                                        }`}>
+                                                        {product.stock}
+                                                    </span>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                     Q.{product.precio}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <button
-                                                        onClick={() => navigate('/EditarProducto')}
+                                                        onClick={() => navigate(`/EditarProducto/${product.idProductos}`)}
                                                         className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
                                                     >
                                                         <Edit className="w-4 h-4" />
                                                         Editar
                                                     </button>
+                                                    {
+                                                        product.estados_idEstados === 1 && (
+                                                            <button
+                                                                onClick={() => handleActivate(product.idProductos)}
+                                                                className='px-3 py-2 text-sm font-medium text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors'
+                                                            >
+                                                                <CheckCircle className='w-4 h-4' />
+                                                                Activar
+                                                            </button>
+                                                        )
+                                                    }
+                                                    {
+                                                        product.estados_idEstados === 2 && (
+                                                            <button
+                                                                onClick={() => handleDeactivate(product.idProductos)}
+                                                                className='px-3 py-2 text-sm font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors'
+                                                            >
+                                                                <Trash className='w-4 h-4' />
+                                                                Desactivar
+                                                            </button>
+                                                        )
+                                                    }
                                                 </td>
                                             </tr>
                                         ))}

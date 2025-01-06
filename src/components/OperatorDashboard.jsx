@@ -2,7 +2,7 @@ import React from 'react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { LogOut, Eye, LayoutGrid, Package, Tags, Building2, Ruler, Users, UserCircle } from 'lucide-react'
+import { Eye } from 'lucide-react'
 import AdminHeader from './AdminHeader'
 
 const OperatorDashboard = () => {

@@ -11,10 +11,11 @@ const PaginatedTable = ({
     onDeactivate,
     onDelete,
     keyID,
-    onActivate
+    onActivate,
+    disabledF = true
 }) => {
     const formatValue = (value, accessor) => {
-        if (accessor === 'estados_idEstados') {
+        if (accessor === 'estados_idEstados' || accessor === 'Estados_idEstados') {
             return (
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${value === 2
                     ? 'bg-green-100 text-green-800'
@@ -22,14 +23,23 @@ const PaginatedTable = ({
                     }`}>
                     {value === 2 ? 'Activo' : 'Inactivo'}
                 </span>
-            );
+            )
+        } else if (accessor === 'rol_idRol') {
+            return (
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${value === 2
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
+                    }`}>
+                    {value === 2 ? 'Cliente' : 'Operador'}
+                </span>
+            )
         }
-        return value;
-    };
+        return value
+    }
 
     return (
         <div className="w-full">
-            <div className="overflow-hidden rounded-lg border border-gray-200">
+            <div className="overflow-x-auto rounded-lg border border-gray-200">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
@@ -81,9 +91,25 @@ const PaginatedTable = ({
                                                 <Power className="h-4 w-4" />
                                             </button>
                                         )}
+                                        {item.Estados_idEstados === 2 && (
+                                            <button
+                                                onClick={() => onDeactivate(item)}
+                                                className="p-1 rounded-full hover:bg-orange-100 text-orange-600 hover:text-orange-700 transition-colors"
+                                            >
+                                                <Power className="h-4 w-4" />
+                                            </button>
+                                        )}
+                                        {item.Estados_idEstados === 1 && (
+                                            <button
+                                                onClick={() => onActivate(item)}
+                                                className="p-1 rounded-full hover:bg-green-100 text-green-600 hover:text-green-700 transition-colors"
+                                            >
+                                                <Power className="h-4 w-4" />
+                                            </button>
+                                        )}
                                         <button
                                             onClick={() => onDelete(item)}
-                                            disabled
+                                            disabled={disabledF}
                                             className="p-1 rounded-full hover:bg-red-100 text-red-600 hover:text-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             <Trash className="h-4 w-4" />

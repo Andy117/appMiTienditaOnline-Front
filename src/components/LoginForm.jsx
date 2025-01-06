@@ -8,7 +8,7 @@ const schema = yup.object().shape({
     password: yup.string().min(8, 'El minimo requerido son 8 caracteres').required('Contraseña requerida')
 })
 
-const LoginForm = ({ onSubmit }) => {
+const LoginForm = ({ onSubmit, textBottom, onClick }) => {
     const {
         register,
         handleSubmit,
@@ -79,10 +79,10 @@ const LoginForm = ({ onSubmit }) => {
 
                 <div className="text-center">
                     <a
-                        href="/recuperar-contrasena"
+                        onClick={onClick}
                         className="text-sm text-green-600 hover:text-green-700 hover:underline transition duration-200"
                     >
-                        ¿Olvidaste tu contraseña?
+                        {textBottom}
                     </a>
                 </div>
             </div>
