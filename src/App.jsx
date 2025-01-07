@@ -17,6 +17,7 @@ import PresentacionProducto from './pages/PresentacionProducto.jsx'
 import EditarProducto from './pages/EditarProducto.jsx'
 import ClientesAdmin from './pages/ClientesAdmin.jsx'
 import UsersAdmin from './pages/UsersAdmin.jsx'
+import ConfirmarCarrito from './pages/ConfirmarCarrito.jsx'
 
 function App() {
   return (
@@ -83,6 +84,11 @@ function App() {
           <Route path='/usuarios' element={
             <ProtectedRoute roles={[1]}>
               <UsersAdmin />
+            </ProtectedRoute>
+          } />
+          <Route path='/confirmarCarrito' element={
+            <ProtectedRoute roles={[2]}>
+              <ConfirmarCarrito />
             </ProtectedRoute>
           } />
         </Routes>
