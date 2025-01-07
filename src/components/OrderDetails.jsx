@@ -2,14 +2,35 @@ import React from "react"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import axios from "axios"
-import { ChevronLeft, Plus, Minus, Trash2 } from "lucide-react"
+import { ChevronLeft, Plus, Minus, Trash2, Save, X } from "lucide-react"
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import TextInput from "./TextInput"
 
 const OrderDetails = () => {
     const navigate = useNavigate()
     const [order, setOrder] = useState(null)
+    const [editedOrder, setEditedOrder] = useState(null)
     const [estado, setEstado] = useState('')
     const [loading, setLoading] = useState(false)
+    const [isEditing, setIsEditing] = useState(false)
     const { orderId } = useParams()
+
+    const [userDetails, setUserDetails] = useState({
+        nombreCompleto: '',
+        direccionOrden: '',
+        telefonoOrden: '',
+        correoElectronicoOrden: '',
+        fechaEntregaOrden: '',
+        totalOrden: ''
+    })
+
+    const [errors, setErrors] = useState({
+        nombreCompleto: '',
+        direccionOrden: '',
+        telefonoOrden: '',
+        correoElectronicoOrden: ''
+    })
 
     const getStatusColor = (status) => {
         const statusColors = {
@@ -24,6 +45,33 @@ const OrderDetails = () => {
         return statusColors[status] || 'bg-gray-100 text-gray-800';
     }
 
+    const validateForm = () => {
+        const newErrors = {}
+
+        if (!userDetails.nombreCompleto.trim()) {
+            newErrors.nombreCompleto = 'El nombre completo es requerido'
+        }
+
+        if (!userDetails.direccionOrden.trim()) {
+            newErrors.direccionOrden = 'La dirección es requerida'
+        }
+
+        if (!userDetails.telefonoOrden.trim()) {
+            newErrors.telefonoOrden = 'El teléfono es requerido';
+        } else if (!/^\d{8}$/.test(userDetails.telefonoOrden.trim())) {
+            newErrors.telefonoOrden = 'El teléfono debe tener 8 dígitos'
+        }
+
+        if (!userDetails.correoElectronicoOrden.trim()) {
+            newErrors.correoElectronicoOrden = 'El correo electrónico es requerido'
+        } else if (!/\S+@\S+\.\S+/.test(userDetails.correoElectronicoOrden)) {
+            newErrors.correoElectronicoOrden = 'Ingrese un correo electrónico válido'
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0
+    }
+
     useEffect(() => {
         const fetchOrderDetails = async () => {
             try {
@@ -31,7 +79,24 @@ const OrderDetails = () => {
                 const response = await axios.get(`http://localhost:1234/api/orders/${orderId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 })
-                setOrder(response.data.data[0])
+                const orderData = response.data.data[0]
+                setOrder(orderData)
+                setEditedOrder({
+                    ...orderData,
+                    DetallesOrden: orderData.DetallesOrden.map(detail => ({
+                        ...detail,
+                        idProducto: detail.ProductoID,
+                        precio: detail.ProductoPrecio
+                    }))
+                })
+                setUserDetails((prev) => ({
+                    ...prev,
+                    nombreCompleto: orderData.nombre_completo,
+                    direccionOrden: orderData.direccion,
+                    telefonoOrden: orderData.telefono,
+                    correoElectronicoOrden: orderData.correo_electronico,
+                    fechaEntregaOrden: orderData.fecha_entrega
+                }))
             } catch (error) {
                 console.error('Error al obtener los detalles de la orden... ', error)
             }
@@ -65,8 +130,111 @@ const OrderDetails = () => {
         }
     }
 
+    const handleItemQuantityChange = (detalleId, newQuantity) => {
+        if (!isEditing) setIsEditing(true)
+        setEditedOrder(prev => ({
+            ...prev,
+            DetallesOrden: prev.DetallesOrden.map(detail =>
+                detail.DetalleID === detalleId
+                    ? {
+                        ...detail,
+                        cantidad: newQuantity,
+                        subtotal: detail.ProductoPrecio * newQuantity
+                    }
+                    : detail
+            )
+        }))
+    }
+
+    const handleRemoveItem = (detalleId) => {
+        if (!isEditing) setIsEditing(true)
+
+        setEditedOrder(prev => ({
+            ...prev,
+            DetallesOrden: prev.DetallesOrden.filter(detail => detail.DetalleID !== detalleId)
+        }))
+    }
+
+    const handleSaveChanges = async () => {
+        if (!validateForm()) {
+            toast.error('Por favor complete los campos requeridos correctamente...')
+            return
+        }
+        const token = localStorage.getItem('token')
+        try {
+            setLoading(true)
+
+            // Crear el array de detalles actualizados
+            const updatedOrderDetails = editedOrder?.DetallesOrden?.map(detail => ({
+                DetalleID: detail.DetalleID,
+                idProducto: detail.ProductoID,
+                precio: detail.ProductoPrecio,
+                cantidad: detail.cantidad,
+                subtotal: detail.subtotal
+            })) || []
+
+            // Calcular el total usando directamente el array de detalles
+            const total = updatedOrderDetails.reduce((sum, detail) => sum + detail.subtotal, 0)
+
+            // Hacer la petición al servidor
+            await axios.put(`http://localhost:1234/api/orders/${orderId}`,
+                {
+                    nombreCompleto: userDetails.nombreCompleto,
+                    direccionOrden: userDetails.direccionOrden,
+                    telefonoOrden: userDetails.telefonoOrden,
+                    correoElectronicoOrden: userDetails.correoElectronicoOrden,
+                    fechaEntregaOrden: userDetails.fechaEntregaOrden,
+                    totalOrden: total,
+                    DetallesJSON: updatedOrderDetails  // Este array será convertido a JSON en el backend
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            )
+            alert('Orden actualizada exitosamente')
+
+            toast.success('Orden actualizada exitosamente')
+            setIsEditing(false)
+            location.reload()
+        } catch (error) {
+            alert('Hubo un problema al guardar los cambios')
+            console.error('Error al guardar los cambios:', error)
+            toast.error('Hubo un problema al guardar los cambios')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleCancelEdit = () => {
+        setEditedOrder(order)
+        setIsEditing(false)
+    }
+
+    const calculateTotal = () => {
+        return editedOrder.DetallesOrden.reduce((total, detail) => total + detail.subtotal, 0)
+    }
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setUserDetails(prevDetails => ({
+            ...prevDetails,
+            [name]: value
+        }))
+
+        setErrors(prev => ({
+            ...prev,
+            [name]: ''
+        }))
+        setIsEditing(true)
+    }
+
+
     return (
         <div className="container mx-auto p-6 max-w-6xl">
+            <ToastContainer position="top-right" autoClose={3000} />
             <button
                 onClick={() => navigate('/inicio')}
                 className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-6 transition-colors"
@@ -80,28 +248,48 @@ const OrderDetails = () => {
 
                 <div className="grid md:grid-cols-2 gap-6 mb-8">
                     <div className="space-y-3">
-                        <p className="flex items-center">
-                            <span className="font-semibold w-24 text-gray-600">Cliente:</span>
-                            <span>{order.nombre_completo}</span>
-                        </p>
-                        <p className="flex items-center">
-                            <span className="font-semibold w-24 text-gray-600">Dirección:</span>
-                            <span>{order.direccion}</span>
-                        </p>
-                        <p className="flex items-center">
-                            <span className="font-semibold w-24 text-gray-600">Teléfono:</span>
-                            <span>{order.telefono}</span>
-                        </p>
+                        <TextInput
+                            label="Nombre Completo"
+                            id="nombreCompleto"
+                            name="nombreCompleto"
+                            type="text"
+                            placeholder="Ingresa el nombre de quien recibe la orden"
+                            value={userDetails.nombreCompleto}
+                            onChange={handleInputChange}
+                            error={errors.nombreCompleto}
+                        />
+                        <TextInput
+                            label="Dirección de entrega"
+                            id="direccionOrden"
+                            name="direccionOrden"
+                            type="text"
+                            placeholder="Ingresa la dirección donde desees recibir tus productos"
+                            value={userDetails.direccionOrden}
+                            onChange={handleInputChange}
+                            error={errors.direccionOrden}
+                        />
+                        <TextInput
+                            label="Teléfono"
+                            id="telefonoOrden"
+                            name="telefonoOrden"
+                            type="tel"
+                            placeholder="Ingresa un número de teléfono de 8 dígitos"
+                            value={userDetails.telefonoOrden}
+                            onChange={handleInputChange}
+                            error={errors.telefonoOrden}
+                        />
+                        <TextInput
+                            label="Correo electrónico"
+                            id="correoElectronicoOrden"
+                            name="correoElectronicoOrden"
+                            type="email"
+                            placeholder="Ingresa tu correo electrónico"
+                            value={userDetails.correoElectronicoOrden}
+                            onChange={handleInputChange}
+                            error={errors.correoElectronicoOrden}
+                        />
                     </div>
                     <div className="space-y-3">
-                        <p className="flex items-center">
-                            <span className="font-semibold w-32 text-gray-600">Correo:</span>
-                            <span>{order.correo_electronico}</span>
-                        </p>
-                        <p className="flex items-center">
-                            <span className="font-semibold w-32 text-gray-600">Fecha entrega:</span>
-                            <span>{order.fecha_entrega}</span>
-                        </p>
                         <p className="flex items-center">
                             <span className="font-semibold w-32 text-gray-600">Estado:</span>
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.Estado_De_La_Orden)}`}>
@@ -152,7 +340,7 @@ const OrderDetails = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                            {order.DetallesOrden.map((detail) => (
+                            {editedOrder.DetallesOrden.map((detail) => (
                                 <tr key={detail.DetalleID} className="hover:bg-gray-50">
                                     <td className="px-6 py-4">{detail.ProductoNombre}</td>
                                     <td className="px-6 py-4">{detail.ProductoDescripcion}</td>
@@ -189,12 +377,31 @@ const OrderDetails = () => {
                             ))}
                             <tr className="bg-gray-50 font-semibold">
                                 <td colSpan="4" className="px-6 py-4 text-right">Total</td>
-                                <td className="px-6 py-4 text-right">Q.{order.total_orden}</td>
+                                <td className="px-6 py-4 text-right">Q.{calculateTotal()}</td>
                                 <td></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+                {isEditing && (
+                    <div className="flex justify-end gap-4 mt-6">
+                        <button
+                            onClick={handleSaveChanges}
+                            disabled={loading}
+                            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+                        >
+                            <Save className="w-4 h-4" />
+                            Guardar Cambios
+                        </button>
+                        <button
+                            onClick={handleCancelEdit}
+                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                        >
+                            <X className="w-4 h-4" />
+                            Cancelar
+                        </button>
+                    </div>
+                )}
             </div>
         </div >
     );
