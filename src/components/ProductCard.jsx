@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingCart, AlertCircle } from 'lucide-react';
+import { ShoppingCart, AlertCircle, Minus, Plus } from 'lucide-react';
 
 const ProductCard = ({ product, onAddToCart }) => {
     const [loading, setLoading] = useState(true);
@@ -10,7 +10,19 @@ const ProductCard = ({ product, onAddToCart }) => {
             onAddToCart({ ...product, cantidad: quantity })
             setQuantity(1)
         }
-    };
+    }
+
+    const handleIncreaseQuantity = () => {
+        if (quantity < product.stock && quantity < 10) {
+            setQuantity(prev => prev + 1)
+        }
+    }
+
+    const handleDecreaseQuantity = () => {
+        if (quantity > 1) {
+            setQuantity(prev => prev - 1)
+        }
+    }
 
     return (
         <div className="bg-white rounded-lg shadow-md border p-4 transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
@@ -51,17 +63,19 @@ const ProductCard = ({ product, onAddToCart }) => {
                     {product.stock > 0 && (
                         <div className="flex items-center gap-2">
                             <label className="text-sm text-gray-600">Cantidad:</label>
-                            <select
-                                value={quantity}
-                                onChange={(e) => setQuantity(Number(e.target.value))}
-                                className="border rounded px-2 py-1 text-sm"
+                            <button
+                                onClick={handleDecreaseQuantity}
+                                className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-l"
                             >
-                                {[...Array(Math.min(product.stock, 10))].map((_, i) => (
-                                    <option key={i + 1} value={i + 1}>
-                                        {i + 1}
-                                    </option>
-                                ))}
-                            </select>
+                                <Minus size={16} />
+                            </button>
+                            <span className="px-3 text-sm">{quantity}</span>
+                            <button
+                                onClick={handleIncreaseQuantity}
+                                className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-r"
+                            >
+                                <Plus size={16} />
+                            </button>
                         </div>
                     )}
                 </div>
