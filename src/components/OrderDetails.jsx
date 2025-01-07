@@ -233,21 +233,25 @@ const OrderDetails = () => {
 
 
     return (
-        <div className="container mx-auto p-6 max-w-6xl">
+        <div className="container mx-auto px-4 py-8 max-w-7xl">
             <ToastContainer position="top-right" autoClose={3000} />
-            <button
-                onClick={() => navigate('/inicio')}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-6 transition-colors"
-            >
-                <ChevronLeft className="w-4 h-4" />
-                Regresar
-            </button>
 
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-                <h1 className="text-3xl font-bold mb-6 text-gray-800">Orden #{order.OrdenID}</h1>
+            {/* Encabezado con botón de retorno */}
+            <div className="flex items-center justify-between mb-8">
+                <button
+                    onClick={() => navigate('/inicio')}
+                    className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                    <ChevronLeft className="w-5 h-5" />
+                    <span className="font-medium">Regresar</span>
+                </button>
+                <h1 className="text-3xl font-bold text-gray-800">Orden #{order.OrdenID}</h1>
+            </div>
 
-                <div className="grid md:grid-cols-2 gap-6 mb-8">
-                    <div className="space-y-3">
+            <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
+                {/* Sección de Información del Cliente */}
+                <div className="grid md:grid-cols-2 gap-8 p-6 bg-gray-50 border-b">
+                    <div className="space-y-6">
                         <TextInput
                             label="Nombre Completo"
                             id="nombreCompleto"
@@ -257,26 +261,31 @@ const OrderDetails = () => {
                             value={userDetails.nombreCompleto}
                             onChange={handleInputChange}
                             error={errors.nombreCompleto}
+                            className="shadow-sm"
                         />
                         <TextInput
                             label="Dirección de entrega"
                             id="direccionOrden"
                             name="direccionOrden"
                             type="text"
-                            placeholder="Ingresa la dirección donde desees recibir tus productos"
+                            placeholder="Ingresa la dirección de entrega"
                             value={userDetails.direccionOrden}
                             onChange={handleInputChange}
                             error={errors.direccionOrden}
+                            className="shadow-sm"
                         />
+                    </div>
+                    <div className="space-y-6">
                         <TextInput
                             label="Teléfono"
                             id="telefonoOrden"
                             name="telefonoOrden"
                             type="tel"
-                            placeholder="Ingresa un número de teléfono de 8 dígitos"
+                            placeholder="Ingresa un número de teléfono"
                             value={userDetails.telefonoOrden}
                             onChange={handleInputChange}
                             error={errors.telefonoOrden}
+                            className="shadow-sm"
                         />
                         <TextInput
                             label="Correo electrónico"
@@ -287,27 +296,29 @@ const OrderDetails = () => {
                             value={userDetails.correoElectronicoOrden}
                             onChange={handleInputChange}
                             error={errors.correoElectronicoOrden}
+                            className="shadow-sm"
                         />
-                    </div>
-                    <div className="space-y-3">
-                        <p className="flex items-center">
-                            <span className="font-semibold w-32 text-gray-600">Estado:</span>
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.Estado_De_La_Orden)}`}>
-                                {order.Estado_De_La_Orden}
-                            </span>
-                        </p>
                     </div>
                 </div>
 
-                <div className="bg-gray-50 p-4 rounded-lg mb-8">
-                    <h3 className="text-lg font-semibold mb-3 text-gray-700">Cambiar estado</h3>
-                    <div className="flex gap-4">
+                {/* Sección de Estado de la Orden */}
+                <div className="p-6 bg-white border-b">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-xl font-semibold text-gray-700">Estado de la Orden</h3>
+                        <span
+                            className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.Estado_De_La_Orden)}`}
+                        >
+                            {order.Estado_De_La_Orden}
+                        </span>
+                    </div>
+
+                    <div className="flex items-center gap-4">
                         <select
                             value={estado}
                             onChange={(e) => setEstado(Number(e.target.value))}
-                            className="border rounded-lg px-4 py-2 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="flex-grow border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                         >
-                            <option value="" disabled>Seleccione una opción</option>
+                            <option value="" disabled>Seleccione un nuevo estado</option>
                             <option value={3}>Pendiente</option>
                             <option value={4}>Aprobado</option>
                             <option value={5}>Rechazado</option>
@@ -319,91 +330,96 @@ const OrderDetails = () => {
                         <button
                             onClick={handleEstadoChange}
                             disabled={loading}
-                            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors disabled:opacity-50"
                         >
-                            Actualizar estado
+                            Actualizar
                         </button>
                     </div>
                 </div>
 
-                <h2 className="text-2xl font-bold mb-4 text-gray-800">Detalles de productos</h2>
-                <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="text-left px-6 py-3 text-gray-600">Producto</th>
-                                <th className="text-left px-6 py-3 text-gray-600">Descripción</th>
-                                <th className="text-center px-6 py-3 text-gray-600">Cantidad</th>
-                                <th className="text-right px-6 py-3 text-gray-600">Precio Unitario</th>
-                                <th className="text-right px-6 py-3 text-gray-600">Subtotal</th>
-                                <th className="text-center px-6 py-3 text-gray-600">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                            {editedOrder.DetallesOrden.map((detail) => (
-                                <tr key={detail.DetalleID} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4">{detail.ProductoNombre}</td>
-                                    <td className="px-6 py-4">{detail.ProductoDescripcion}</td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center justify-center gap-3">
-                                            <button
-                                                onClick={() => handleItemQuantityChange(detail.DetalleID, Math.max(1, detail.cantidad - 1))}
-                                                className="p-1 rounded-full hover:bg-gray-100"
-                                            >
-                                                <Minus className="w-4 h-4" />
-                                            </button>
-                                            <span className="w-8 text-center">{detail.cantidad}</span>
-                                            <button
-                                                onClick={() => handleItemQuantityChange(detail.DetalleID, detail.cantidad + 1)}
-                                                className="p-1 rounded-full hover:bg-gray-100"
-                                            >
-                                                <Plus className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">Q.{detail.ProductoPrecio}</td>
-                                    <td className="px-6 py-4 text-right">Q.{detail.subtotal}</td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex justify-center">
-                                            <button
-                                                onClick={() => handleRemoveItem(detail.DetalleID)}
-                                                className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                                            >
-                                                <Trash2 className="w-5 h-5" />
-                                            </button>
-                                        </div>
-                                    </td>
+                {/* Tabla de Productos */}
+                <div className="p-6">
+                    <h2 className="text-2xl font-bold mb-6 text-gray-800">Detalles de Productos</h2>
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                                    <th className="py-3 px-6 text-left">Producto</th>
+                                    <th className="py-3 px-6 text-left">Descripción</th>
+                                    <th className="py-3 px-6 text-center">Cantidad</th>
+                                    <th className="py-3 px-6 text-right">Precio</th>
+                                    <th className="py-3 px-6 text-right">Subtotal</th>
+                                    <th className="py-3 px-6 text-center">Acciones</th>
                                 </tr>
-                            ))}
-                            <tr className="bg-gray-50 font-semibold">
-                                <td colSpan="4" className="px-6 py-4 text-right">Total</td>
-                                <td className="px-6 py-4 text-right">Q.{calculateTotal()}</td>
-                                <td></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="text-gray-600 text-sm font-light">
+                                {editedOrder.DetallesOrden.map((detail) => (
+                                    <tr key={detail.DetalleID} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4">{detail.ProductoNombre}</td>
+                                        <td className="px-6 py-4">{detail.ProductoDescripcion}</td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center justify-center gap-3">
+                                                <button
+                                                    onClick={() => handleItemQuantityChange(detail.DetalleID, Math.max(1, detail.cantidad - 1))}
+                                                    className="p-1 rounded-full hover:bg-gray-100"
+                                                >
+                                                    <Minus className="w-4 h-4" />
+                                                </button>
+                                                <span className="w-8 text-center">{detail.cantidad}</span>
+                                                <button
+                                                    onClick={() => handleItemQuantityChange(detail.DetalleID, detail.cantidad + 1)}
+                                                    className="p-1 rounded-full hover:bg-gray-100"
+                                                >
+                                                    <Plus className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">Q.{detail.ProductoPrecio}</td>
+                                        <td className="px-6 py-4 text-right">Q.{detail.subtotal}</td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex justify-center">
+                                                <button
+                                                    onClick={() => handleRemoveItem(detail.DetalleID)}
+                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                                                >
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                <tr className="bg-gray-50 font-bold">
+                                    <td colSpan="4" className="text-right px-6 py-3">Total</td>
+                                    <td className="text-right px-6 py-3 text-green-600">Q.{calculateTotal()}</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+
+                {/* Botones de Accción */}
                 {isEditing && (
-                    <div className="flex justify-end gap-4 mt-6">
+                    <div className="p-6 bg-gray-50 flex justify-end gap-4">
+                        <button
+                            onClick={handleCancelEdit}
+                            className="px-6 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors flex items-center gap-2"
+                        >
+                            <X className="w-5 h-5" />
+                            Cancelar
+                        </button>
                         <button
                             onClick={handleSaveChanges}
                             disabled={loading}
-                            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+                            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-colors disabled:opacity-50 flex items-center gap-2"
                         >
-                            <Save className="w-4 h-4" />
+                            <Save className="w-5 h-5" />
                             Guardar Cambios
-                        </button>
-                        <button
-                            onClick={handleCancelEdit}
-                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
-                        >
-                            <X className="w-4 h-4" />
-                            Cancelar
                         </button>
                     </div>
                 )}
             </div>
-        </div >
+        </div>
     );
 }
 
