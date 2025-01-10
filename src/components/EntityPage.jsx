@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import PaginatedTable from './PaginatedTable'
 import FormModal from './FormModal'
-import { useFormik } from 'formik'
+import { Form, useFormik } from 'formik'
 import * as Yup from 'yup'
 import { Plus, ChevronLeftCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
@@ -18,7 +18,8 @@ const EntityPage = ({ entityName, apiUrl, fields, keyID, type }) => {
     const [editingItem, setEditingItem] = useState(null)
     const [deactivatingItem, setDeactivatingItem] = useState(null)
     const [activatingItem, setActivatingItem] = useState(null)
-    const [deletingItem, setDeletingItem] = useState(null)
+    const [isModalOpenPassword, setIsModalOpenPassword] = useState(false)
+    const [changingPasswordItem, setChangingPassworditem] = useState(null)
     const token = localStorage.getItem('token');
     const navigate = useNavigate()
 
@@ -36,6 +37,8 @@ const EntityPage = ({ entityName, apiUrl, fields, keyID, type }) => {
         }
         fetchData()
     }, [currentPage])
+
+
 
     const formik = useFormik({
         initialValues: fields.reduce((acc, field) => {
@@ -56,6 +59,7 @@ const EntityPage = ({ entityName, apiUrl, fields, keyID, type }) => {
                             headers: { Authorization: `Bearer ${token}` }
                         })
                         alert(`${entityName} editada con exito!`)
+
                     } catch (error) {
                         console.error(`Error al editar la ${entityName}`, error)
                         alert(`Hubo un error, la ${entityName} ya existe...`)
@@ -67,6 +71,7 @@ const EntityPage = ({ entityName, apiUrl, fields, keyID, type }) => {
                             headers: { Authorization: `Bearer ${token}` }
                         })
                         alert(`${entityName} desactivado con exito!`)
+                        location.reload()
                     } catch (error) {
                         console.error(`Error al desactivar la ${entityName}`, error)
                         alert(`Hubo un error, al intentar desactivar la ${entityName}...`)
@@ -77,6 +82,7 @@ const EntityPage = ({ entityName, apiUrl, fields, keyID, type }) => {
                             headers: { Authorization: `Bearer ${token}` }
                         })
                         alert(`${entityName} Activada con exito!`)
+                        location.reload()
                     } catch (error) {
                         console.error(`Error al Activar la ${entityName}`, error)
                         alert(`Hubo un error, al intentar activar la ${entityName}...`)
@@ -101,7 +107,38 @@ const EntityPage = ({ entityName, apiUrl, fields, keyID, type }) => {
                 console.error('Error al realizar la operacion solicitada...:', error);
             }
         },
-    });
+    })
+
+    const onChangePassword = (item) => {
+        formikPassword.resetForm()
+        setChangingPassworditem(item)
+        setIsModalOpenPassword(true)
+    }
+
+    const handlePasswordSubmit = async (values) => {
+        try {
+            await axios.patch(`${apiUrl}/changePassword/${changingPasswordItem[keyID]}`, { contrasenia: values.nuevaContrasenia }, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            alert('Contraseña actualizada con éxito!')
+            setIsModalOpenPassword(false)
+        } catch (error) {
+            console.error('Error al actualizar la contraseña..', error)
+            alert('Hubo un error al actualizar la contraseña')
+
+        }
+    }
+
+    const formikPassword = useFormik({
+        initialValues: {
+            nuevaContrasenia: ''
+        },
+        validationSchema: Yup.object({
+            nuevaContrasenia: Yup.string().min(8, 'Debe tener almenos 8 caracteres...')
+                .required('Campo obligatorio...')
+        }),
+        onSubmit: handlePasswordSubmit
+    })
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -127,6 +164,7 @@ const EntityPage = ({ entityName, apiUrl, fields, keyID, type }) => {
                             </button>
                             <button
                                 onClick={() => {
+                                    formik.resetForm()
                                     setEditingItem(null);
                                     setIsModalOpen2(true);
                                 }}
@@ -166,6 +204,8 @@ const EntityPage = ({ entityName, apiUrl, fields, keyID, type }) => {
                             formik.setValues(item);
                             setIsModalOpenAct(true);
                         }}
+                        onChangePassword={onChangePassword}
+
                     />
                 </div>
 
@@ -175,7 +215,7 @@ const EntityPage = ({ entityName, apiUrl, fields, keyID, type }) => {
                     onClose={() => setIsModalOpen(false)}
                     onSubmit={formik.handleSubmit}
                     formik={formik}
-                    fields={fields}
+                    fields={fields.filter(field => field.name !== 'estados_idEstados' && field.name !== 'rol_idRol' && field.name !== 'contrasenia')}
                     title={`Editar ${entityName}`}
                     txtBtn="Guardar cambios"
                 />
@@ -185,7 +225,7 @@ const EntityPage = ({ entityName, apiUrl, fields, keyID, type }) => {
                     onClose={() => setIsModalOpen2(false)}
                     onSubmit={formik.handleSubmit}
                     formik={formik}
-                    fields={fields}
+                    fields={fields.filter(field => field.name !== 'estados_idEstados' && field.name !== 'rol_idRol')}
                     title={`Agregar nuevo ${entityName}`}
                     txtBtn="Crear"
                 />
@@ -210,6 +250,23 @@ const EntityPage = ({ entityName, apiUrl, fields, keyID, type }) => {
                     disabled
                     title={`Activar ${entityName}`}
                     txtBtn="Activar"
+                />
+                <FormModal
+                    isOpen={isModalOpenPassword}
+                    onClose={() => setIsModalOpenPassword(false)}
+                    onSubmit={formikPassword.handleSubmit}
+                    formik={formikPassword}
+                    fields={[
+                        {
+                            name: 'nuevaContrasenia',
+                            label: 'Cambio de contraseña',
+                            type: 'password',
+                            placeholder: 'Ingrese la nueva contraseña',
+                            validation: Yup.string().min(8, 'Debe tener almenos 8 caracteres...').required('Campo obligatorio...')
+                        }
+                    ]}
+                    title='Cambiar Contraseña'
+                    txtBtn="Actualizar"
                 />
             </div>
         </div>
