@@ -30,8 +30,10 @@ const Login = () => {
             console.log(decodedToken)
             navigate(decodedToken.rol_id === 1 ? '/inicio' : '/cliente')
         } catch (error) {
-            console.error('Error al iniciar sesion...', error.response?.data?.message || 'Ocurrio un error...')
-            alert('Credenciales incorrectas o problemas en el servidor.')
+            const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado.'
+
+            console.error('Error al iniciar sesión:', errorMessage)
+            alert(errorMessage)
         }
     }
 
