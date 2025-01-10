@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 
 const OrderHistory = () => {
     const [orders, setOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -16,19 +20,14 @@ const OrderHistory = () => {
             }
 
             try {
-                const response = await fetch('http://localhost:1234/api/orders/client', {
+                const response = await axios.get('http://localhost:1234/api/orders/client', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Error ${response.status}: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                setOrders(data.data);
+                setOrders(response.data.data);
             } catch (error) {
                 setError('Error al cargar el historial de órdenes: ' + error.message);
             } finally {
@@ -39,9 +38,32 @@ const OrderHistory = () => {
         fetchOrders();
     }, []);
 
+    const handleCancelOrder = async (orderId) => {
+        const token = localStorage.getItem('token');
+        try {
+            setLoading(true);
+            await axios.put(`http://localhost:1234/api/orders/cancel/${orderId}`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            toast.success('Orden cancelada exitosamente');
+            setOrders((prevOrders) => prevOrders.map(order =>
+                order.OrdenID === orderId ? { ...order, Estado_De_La_Orden: 'Cancelado' } : order
+            ));
+        } catch (error) {
+            console.error('Error al cancelar la orden:', error);
+            toast.error('Error al cancelar la orden');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const formatDate = (dateString) => {
         try {
-            return format(new Date(dateString), 'PPP', { locale: es });
+            return new Date(dateString).toLocaleDateString('es-GT', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
         } catch {
             return dateString;
         }
@@ -63,7 +85,7 @@ const OrderHistory = () => {
             'Enviado': 'bg-blue-200 text-blue-900',
             'En Proceso': 'bg-blue-100 text-blue-800'
         };
-        return statusColors[status] || 'bg-gray-100 text-gray-800'
+        return statusColors[status] || 'bg-gray-100 text-gray-800';
     };
 
     if (isLoading) {
@@ -96,6 +118,7 @@ const OrderHistory = () => {
 
     return (
         <div className="max-w-4xl mx-auto mt-8">
+            <ToastContainer position="top-right" autoClose={3000} />
             <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-center mb-6">
                     <svg className="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,7 +149,7 @@ const OrderHistory = () => {
                                                     <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                     </svg>
-                                                    {formatDate(order.fecha_entrega)}
+                                                    {order.fecha_entrega}
                                                 </span>
                                                 <span className="flex items-center">
                                                     <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,6 +189,17 @@ const OrderHistory = () => {
                                             </div>
                                         ))}
                                     </div>
+
+                                    {/* Botón de cancelar */}
+                                    {order.Estado_De_La_Orden !== 'Cancelado' && order.Estado_De_La_Orden !== 'Aprobado' && order.Estado_De_La_Orden !== 'En Proceso' && order.Estado_De_La_Orden !== 'Entregado' && (
+                                        <button
+                                            onClick={() => handleCancelOrder(order.OrdenID)}
+                                            disabled={loading}
+                                            className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-colors disabled:opacity-50"
+                                        >
+                                            Cancelar Orden
+                                        </button>
+                                    )}
                                 </div>
                             ))}
                         </div>
