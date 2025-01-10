@@ -183,7 +183,7 @@ const OrderDetails = () => {
                     direccionOrden: userDetails.direccionOrden,
                     telefonoOrden: userDetails.telefonoOrden,
                     correoElectronicoOrden: userDetails.correoElectronicoOrden,
-                    fechaEntregaOrden: userDetails.fechaEntregaOrden,
+                    fechaEntregaOrden: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
                     totalOrden: total,
                     DetallesJSON: updatedOrderDetails  // Este array será convertido a JSON en el backend
                 },
@@ -229,6 +229,24 @@ const OrderDetails = () => {
             [name]: ''
         }))
         setIsEditing(true)
+    }
+
+    const handleCancelOrder = async () => {
+        const token = localStorage.getItem('token')
+        try {
+            setLoading(true)
+            await axios.put(`http://localhost:1234/api/orders/cancel/${orderId}`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            toast.success('Orden cancelada exitosamente')
+            alert('Orden Cancelada Exitosamente')
+            navigate('/inicio')
+        } catch (error) {
+            console.error('Error al cancelar la orden:', error)
+            toast.error('Error al cancelar la orden')
+        } finally {
+            setLoading(false)
+        }
     }
 
 
@@ -299,6 +317,18 @@ const OrderDetails = () => {
                             className="shadow-sm"
                         />
                     </div>
+                    <div>
+                        <p className="text-sm text-gray-600">
+                            <strong>Fecha de entrega:</strong>{' '}
+                            {userDetails.fechaEntregaOrden}
+                        </p>
+                    </div>
+                    <div>
+                        <p className="text-sm text-gray-600">
+                            <strong>Fecha de entrega estimada (si actualiza la orden):</strong>{' '}
+                            {new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                        </p>
+                    </div>
                 </div>
 
                 {/* Sección de Estado de la Orden */}
@@ -315,24 +345,33 @@ const OrderDetails = () => {
                     <div className="flex items-center gap-4">
                         <select
                             value={estado}
+                            disabled={loading || order.Estado_De_La_Orden === 'Cancelado' || order.Estado_De_La_Orden === 'Aprobado' || order.Estado_De_La_Orden === 'En proceso' || order.Estado_De_La_Orden === 'Entregado'}
                             onChange={(e) => setEstado(Number(e.target.value))}
                             className="flex-grow border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                         >
                             <option value="" disabled>Seleccione un nuevo estado</option>
                             <option value={3}>Pendiente</option>
                             <option value={4}>Aprobado</option>
-                            <option value={5}>Rechazado</option>
+
                             <option value={6}>En proceso</option>
                             <option value={7}>Enviado</option>
                             <option value={8}>Entregado</option>
-                            <option value={9}>Cancelado</option>
+
                         </select>
                         <button
                             onClick={handleEstadoChange}
-                            disabled={loading}
+                            disabled={loading || order.Estado_De_La_Orden === 'Cancelado' || order.Estado_De_La_Orden === 'Aprobado' || order.Estado_De_La_Orden === 'En proceso' || order.Estado_De_La_Orden === 'Entregado'}
                             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors disabled:opacity-50"
                         >
                             Actualizar
+                        </button>
+
+                        <button
+                            onClick={handleCancelOrder}
+                            disabled={loading || order.Estado_De_La_Orden === 'Cancelado' || order.Estado_De_La_Orden === 'Aprobado' || order.Estado_De_La_Orden === 'En proceso' || order.Estado_De_La_Orden === 'Entregado'}
+                            className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-colors disabled:opacity-50"
+                        >
+                            Cancelar Orden
                         </button>
                     </div>
                 </div>
@@ -362,6 +401,7 @@ const OrderDetails = () => {
                                                 <button
                                                     onClick={() => handleItemQuantityChange(detail.DetalleID, Math.max(1, detail.cantidad - 1))}
                                                     className="p-1 rounded-full hover:bg-gray-100"
+                                                    disabled={order.Estado_De_La_Orden === 'Cancelado' || order.Estado_De_La_Orden === 'Aprobado' || order.Estado_De_La_Orden === 'En proceso' || order.Estado_De_La_Orden === 'Entregado'}
                                                 >
                                                     <Minus className="w-4 h-4" />
                                                 </button>
@@ -369,6 +409,7 @@ const OrderDetails = () => {
                                                 <button
                                                     onClick={() => handleItemQuantityChange(detail.DetalleID, detail.cantidad + 1)}
                                                     className="p-1 rounded-full hover:bg-gray-100"
+                                                    disabled={order.Estado_De_La_Orden === 'Cancelado' || order.Estado_De_La_Orden === 'Aprobado' || order.Estado_De_La_Orden === 'En proceso' || order.Estado_De_La_Orden === 'Entregado'}
                                                 >
                                                     <Plus className="w-4 h-4" />
                                                 </button>
