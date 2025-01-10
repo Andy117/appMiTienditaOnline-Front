@@ -8,7 +8,7 @@ const ProductCard = ({ product, onAddToCart }) => {
     const handleAddToCart = () => {
         if (product.stock >= quantity) {
             onAddToCart({ ...product, cantidad: quantity })
-            setQuantity(1)
+
         }
     }
 
@@ -51,7 +51,7 @@ const ProductCard = ({ product, onAddToCart }) => {
             <div className="mt-4 space-y-3">
                 <h3 className="text-lg font-bold text-gray-800 line-clamp-2">{product.nombre}</h3>
                 <p className="text-sm text-gray-600 line-clamp-2">{product.descripcion}</p>
-                <p className="text-xl font-semibold text-green-600">Q.{product.precio.toFixed(2)}</p>
+                <p className="text-xl font-semibold text-green-600">Q.{product.precio}</p>
                 <div className="flex items-center justify-between">
                     <p className={`text-sm ${product.stock > 0 ? 'text-green-500' : 'text-red-500'} flex items-center gap-1`}>
                         {product.stock > 0 ? (
