@@ -1,5 +1,8 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight, Pencil, Power, Trash } from 'lucide-react';
+import { ChevronLeft, ChevronRight, KeyRound, Pencil, Power, Trash, User, UserCog } from 'lucide-react';
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import axios from 'axios';
 
 const PaginatedTable = ({
     data,
@@ -12,6 +15,7 @@ const PaginatedTable = ({
     onDelete,
     keyID,
     onActivate,
+    onChangePassword,
     disabledF = true
 }) => {
     const formatValue = (value, accessor) => {
@@ -27,18 +31,49 @@ const PaginatedTable = ({
         } else if (accessor === 'rol_idRol') {
             return (
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${value === 2
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
+                    ? 'bg-cyan-100 text-cyan-800'
+                    : 'bg-pink-100 text-pink-800'
                     }`}>
                     {value === 2 ? 'Cliente' : 'Operador'}
                 </span>
             )
         }
+        if (accessor === 'contrasenia') {
+            return '********'
+        }
         return value
     }
 
+    const onChangeToAdmin = async (id) => {
+        const token = localStorage.getItem('token');
+        try {
+            await axios.patch(`http://localhost:1234/api/users/changeToAdmin/${id}`, {}, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            toast.success('Rol cambiado a Administrador con éxito');
+        } catch (error) {
+            console.error('Error al cambiar a Administrador:', error);
+            toast.error('Hubo un error al cambiar el rol a Administrador.');
+        }
+    };
+
+    const onChangeToClient = async (id) => {
+        const token = localStorage.getItem('token');
+        try {
+            await axios.patch(`http://localhost:1234/api/users/changeToClient/${id}`, {}, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            toast.success('Rol cambiado a Cliente con éxito');
+        } catch (error) {
+            console.error('Error al cambiar a Cliente:', error);
+            toast.error('Hubo un error al cambiar el rol a Cliente.');
+        }
+    };
+
     return (
         <div className="w-full">
+            <ToastContainer position="top-right" autoClose={3000} />
+
             <div className="overflow-x-auto rounded-lg border border-gray-200">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
@@ -65,6 +100,7 @@ const PaginatedTable = ({
                                         className="px-6 py-4 whitespace-nowrap text-sm text-gray-600"
                                     >
                                         {formatValue(item[col.accessor], col.accessor)}
+
                                     </td>
                                 ))}
                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -73,14 +109,14 @@ const PaginatedTable = ({
                                             onClick={() => onEdit(item)}
                                             className="p-1 rounded-full hover:bg-blue-100 text-blue-600 hover:text-blue-700 transition-colors"
                                         >
-                                            <Pencil className="h-4 w-4" />
+                                            <Pencil className="h-5 w-5" />
                                         </button>
                                         {item.estados_idEstados === 2 && (
                                             <button
                                                 onClick={() => onDeactivate(item)}
                                                 className="p-1 rounded-full hover:bg-orange-100 text-orange-600 hover:text-orange-700 transition-colors"
                                             >
-                                                <Power className="h-4 w-4" />
+                                                <Power className="h-5 w-5" />
                                             </button>
                                         )}
                                         {item.estados_idEstados === 1 && (
@@ -88,7 +124,7 @@ const PaginatedTable = ({
                                                 onClick={() => onActivate(item)}
                                                 className="p-1 rounded-full hover:bg-green-100 text-green-600 hover:text-green-700 transition-colors"
                                             >
-                                                <Power className="h-4 w-4" />
+                                                <Power className="h-5 w-5" />
                                             </button>
                                         )}
                                         {item.Estados_idEstados === 2 && (
@@ -96,7 +132,7 @@ const PaginatedTable = ({
                                                 onClick={() => onDeactivate(item)}
                                                 className="p-1 rounded-full hover:bg-orange-100 text-orange-600 hover:text-orange-700 transition-colors"
                                             >
-                                                <Power className="h-4 w-4" />
+                                                <Power className="h-5 w-5" />
                                             </button>
                                         )}
                                         {item.Estados_idEstados === 1 && (
@@ -104,15 +140,43 @@ const PaginatedTable = ({
                                                 onClick={() => onActivate(item)}
                                                 className="p-1 rounded-full hover:bg-green-100 text-green-600 hover:text-green-700 transition-colors"
                                             >
-                                                <Power className="h-4 w-4" />
+                                                <Power className="h-5 w-5" />
                                             </button>
                                         )}
+                                        {item.rol_idRol === 1 && (
+                                            <button
+                                                onClick={() => onChangeToClient(item.idUsuarios)}
+                                                className="p-1 rounded-full hover:bg-green-100 text-green-600 hover:text-green-700 transition-colors"
+                                            >
+                                                <User className="h-5 w-5" />
+                                            </button>
+                                        )}
+
+                                        {item.rol_idRol === 2 && (
+                                            <button
+                                                onClick={() => onChangeToAdmin(item.idUsuarios)}
+                                                className="p-1 rounded-full hover:bg-red-100 text-red-600 hover:text-red-700 transition-colors"
+                                            >
+                                                <UserCog className="h-5 w-5" />
+                                            </button>
+                                        )}
+
+                                        {item.contrasenia && (
+                                            <button
+                                                className="p-1 rounded-full hover:bg-purple-100 text-purple-600 hover:text-purple-700 transition-colors"
+                                                onClick={() => onChangePassword(item)}
+                                            >
+                                                <KeyRound className="h-5 w-5" />
+                                            </button>
+                                        )}
+
+
                                         <button
                                             onClick={() => onDelete(item)}
                                             disabled={disabledF}
                                             className="p-1 rounded-full hover:bg-red-100 text-red-600 hover:text-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            <Trash className="h-4 w-4" />
+                                            <Trash className="h-5 w-5" />
                                         </button>
                                     </div>
                                 </td>
