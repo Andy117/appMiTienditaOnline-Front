@@ -6,12 +6,17 @@ import 'react-toastify/dist/ReactToastify.css'
 import axios from "axios"
 import { jwtDecode } from "jwt-decode"
 import TextInput from "../components/TextInput"
+import { X } from "lucide-react"
 
 const ConfirmarCarrito = () => {
     const [cart, setCart] = useState(() => {
         const savedCart = localStorage.getItem('cart')
         return savedCart ? JSON.parse(savedCart) : []
     })
+
+    useEffect(() => {
+        localStorage.setItem('cart', JSON.stringify(cart))
+    }, [cart])
 
     const [errors, setErrors] = useState({
         nombreCompleto: '',
@@ -145,6 +150,10 @@ const ConfirmarCarrito = () => {
         navigate('/cliente')
     }
 
+    const handleRemoveItem = (itemToRemove) => {
+        setCart(prevCart => prevCart.filter(item => item.idProductos !== itemToRemove.idProductos))
+    }
+
     const totalAmount = cart.reduce((total, item) => total + item.precio * item.cantidad, 0)
 
     return (
@@ -193,6 +202,12 @@ const ConfirmarCarrito = () => {
                                         <div className="text-right">
                                             <p className="font-medium">Q.{(item.precio * item.cantidad).toFixed(2)}</p>
                                         </div>
+                                        <button
+                                            onClick={() => handleRemoveItem(item)}
+                                            className="text-red-500 hover:text-red-700"
+                                        >
+                                            <X size={20} />
+                                        </button>
                                     </li>
                                 ))}
                             </ul>
