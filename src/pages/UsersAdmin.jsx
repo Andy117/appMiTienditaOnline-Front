@@ -34,6 +34,23 @@ const UsersAdmin = () => {
                             name: 'rol_idRol',
                             label: 'Rol dentro del sistema',
                             validation: Yup.number().optional().nullable()
+                        },
+                        {
+                            name: 'estados_idEstados',
+                            label: 'Estado dentro del sistema',
+                            validation: Yup.number().optional().nullable()
+                        },
+                        {
+                            name: 'contrasenia',
+                            label: 'Contraseña',
+                            type: 'password',
+                            validation: Yup.string().min(8, 'La contraseña debe de tener almenos 8 caracteres').required()
+                        },
+                        {
+                            name: 'fecha_nacimiento',
+                            label: 'Fecha de nacimiento',
+                            type: 'date',
+                            validation: Yup.date().max(new Date(new Date().setFullYear(new Date().getFullYear() - 18)), 'Debes tener almenos 18 años para registrarte').required('La fecha de nacimiento es requerida').transform((value) => (value ? new Date(value) : null))
                         }
                     ]}
                     keyID='idUsuarios'
