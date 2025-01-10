@@ -19,7 +19,7 @@ const ProductTable = () => {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:1234/api/products?page=${page}&limit=${productsPerPage}`, {
+            const response = await axios.get(`http://localhost:1234/api/products/operator?page=${page}&limit=${productsPerPage}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
