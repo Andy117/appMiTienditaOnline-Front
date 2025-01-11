@@ -1,9 +1,9 @@
 import axios from "axios"
 
-const API_URL = "http://localhost:1234/api"
+const apiURL = import.meta.env.VITE_API_URL
 
 const login = async (credentials) => {
-    return axios.post(`${API_URL}/login`, credentials)
+    return axios.post(`${apiURL}/login`, credentials)
 }
 
 const authService = {

@@ -12,6 +12,7 @@ import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 const HomeCliente = () => {
+    const apiURL = import.meta.env.VITE_API_URL
     const [products, setProducts] = useState([])
     const [cart, setCart] = useState(() => {
         const savedCart = localStorage.getItem('cart')
@@ -36,7 +37,7 @@ const HomeCliente = () => {
     const fetchProducts = useCallback(async (page = 1, category = null, search = '') => {
         try {
             setLoading(true)
-            const response = await axios.get('http://localhost:1234/api/products', {
+            const response = await axios.get(`${apiURL}/api/products`, {
                 params: {
                     page,
                     limit: 12,

@@ -4,6 +4,7 @@ import * as Yup from 'yup'
 import AdminHeader from "../components/AdminHeader"
 
 const CategoriasProducto = () => {
+    const apiURL = import.meta.env.VITE_API_URL
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="container mx-auto px-4 py-6">
@@ -13,7 +14,7 @@ const CategoriasProducto = () => {
                 />
                 <EntityPage
                     entityName='Categoria'
-                    apiUrl='http://localhost:1234/api/categories'
+                    apiUrl={`${apiURL}/api/categories`}
                     fields={[
                         {
                             name: 'nombre_categoria',

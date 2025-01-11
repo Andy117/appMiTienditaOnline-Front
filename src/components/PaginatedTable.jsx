@@ -18,6 +18,9 @@ const PaginatedTable = ({
     onChangePassword,
     disabledF = true
 }) => {
+
+    const apiURL = import.meta.env.VITE_API_URL
+
     const formatValue = (value, accessor) => {
         if (accessor === 'estados_idEstados' || accessor === 'Estados_idEstados') {
             return (
@@ -47,7 +50,7 @@ const PaginatedTable = ({
     const onChangeToAdmin = async (id) => {
         const token = localStorage.getItem('token');
         try {
-            await axios.patch(`http://localhost:1234/api/users/changeToAdmin/${id}`, {}, {
+            await axios.patch(`${apiURL}/api/users/changeToAdmin/${id}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             toast.success('Rol cambiado a Administrador con éxito');
@@ -60,7 +63,7 @@ const PaginatedTable = ({
     const onChangeToClient = async (id) => {
         const token = localStorage.getItem('token');
         try {
-            await axios.patch(`http://localhost:1234/api/users/changeToClient/${id}`, {}, {
+            await axios.patch(`${apiURL}/api/users/changeToClient/${id}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             toast.success('Rol cambiado a Cliente con éxito');
@@ -212,7 +215,7 @@ const PaginatedTable = ({
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default PaginatedTable;
+export default PaginatedTable

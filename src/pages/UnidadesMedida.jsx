@@ -4,6 +4,7 @@ import * as Yup from 'yup'
 import AdminHeader from "../components/AdminHeader"
 
 const UnidadesMedida = () => {
+    const apiURL = import.meta.env.VITE_API_URL
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="container mx-auto px-4 py-6">
@@ -13,7 +14,7 @@ const UnidadesMedida = () => {
                 />
                 <EntityPage
                     entityName='Unidades de Medida'
-                    apiUrl='http://localhost:1234/api/measures'
+                    apiUrl={`${apiURL}/api/measures`}
                     fields={[
                         {
                             name: 'nombre_unidad',

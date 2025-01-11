@@ -15,6 +15,7 @@ const OrderDetails = () => {
     const [loading, setLoading] = useState(false)
     const [isEditing, setIsEditing] = useState(false)
     const { orderId } = useParams()
+    const apiURL = import.meta.env.VITE_API_URL
 
     const [userDetails, setUserDetails] = useState({
         nombreCompleto: '',
@@ -76,7 +77,7 @@ const OrderDetails = () => {
         const fetchOrderDetails = async () => {
             try {
                 const token = localStorage.getItem('token')
-                const response = await axios.get(`http://localhost:1234/api/orders/${orderId}`, {
+                const response = await axios.get(`${apiURL}/api/orders/${orderId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                 const orderData = response.data.data[0]
@@ -113,7 +114,7 @@ const OrderDetails = () => {
         try {
 
             setLoading(true)
-            await axios.patch(`http://localhost:1234/api/orders/${orderId}`,
+            await axios.patch(`${apiURL}/api/orders/${orderId}`,
                 {
 
                     estados_idEstados: estado
@@ -124,6 +125,11 @@ const OrderDetails = () => {
             location.reload()
         } catch (error) {
             console.error('Error al actualizar el estado de la orden...', error)
+            if (error.response) {
+                alert(`Hubo un problema al actualizar el estado: ${error.response.data.message}` || error.response.statusText)
+            } else {
+                alert('Hubo un problema al actualizar el estado...')
+            }
             alert('Hubo un problema al actualizar el estado...')
         } finally {
             setLoading(false)
@@ -164,7 +170,6 @@ const OrderDetails = () => {
         try {
             setLoading(true)
 
-            // Crear el array de detalles actualizados
             const updatedOrderDetails = editedOrder?.DetallesOrden?.map(detail => ({
                 DetalleID: detail.DetalleID,
                 idProducto: detail.ProductoID,
@@ -173,11 +178,9 @@ const OrderDetails = () => {
                 subtotal: detail.subtotal
             })) || []
 
-            // Calcular el total usando directamente el array de detalles
             const total = updatedOrderDetails.reduce((sum, detail) => sum + detail.subtotal, 0)
 
-            // Hacer la petición al servidor
-            await axios.put(`http://localhost:1234/api/orders/${orderId}`,
+            await axios.put(`${apiURL}/api/orders/${orderId}`,
                 {
                     nombreCompleto: userDetails.nombreCompleto,
                     direccionOrden: userDetails.direccionOrden,
@@ -185,7 +188,7 @@ const OrderDetails = () => {
                     correoElectronicoOrden: userDetails.correoElectronicoOrden,
                     fechaEntregaOrden: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
                     totalOrden: total,
-                    DetallesJSON: updatedOrderDetails  // Este array será convertido a JSON en el backend
+                    DetallesJSON: updatedOrderDetails
                 },
                 {
                     headers: {
@@ -235,7 +238,7 @@ const OrderDetails = () => {
         const token = localStorage.getItem('token')
         try {
             setLoading(true)
-            await axios.put(`http://localhost:1234/api/orders/cancel/${orderId}`, {}, {
+            await axios.put(`${apiURL}/api/orders/cancel/${orderId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             toast.success('Orden cancelada exitosamente')
@@ -345,7 +348,7 @@ const OrderDetails = () => {
                     <div className="flex items-center gap-4">
                         <select
                             value={estado}
-                            disabled={loading || order.Estado_De_La_Orden === 'Cancelado' || order.Estado_De_La_Orden === 'Aprobado' || order.Estado_De_La_Orden === 'En proceso' || order.Estado_De_La_Orden === 'Entregado'}
+                            disabled={loading || order.Estado_De_La_Orden !== 'Pendiente'}
                             onChange={(e) => setEstado(Number(e.target.value))}
                             className="flex-grow border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                         >
@@ -360,7 +363,7 @@ const OrderDetails = () => {
                         </select>
                         <button
                             onClick={handleEstadoChange}
-                            disabled={loading || order.Estado_De_La_Orden === 'Cancelado' || order.Estado_De_La_Orden === 'Aprobado' || order.Estado_De_La_Orden === 'En proceso' || order.Estado_De_La_Orden === 'Entregado'}
+                            disabled={loading || order.Estado_De_La_Orden !== 'Pendiente'}
                             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors disabled:opacity-50"
                         >
                             Actualizar
@@ -368,7 +371,7 @@ const OrderDetails = () => {
 
                         <button
                             onClick={handleCancelOrder}
-                            disabled={loading || order.Estado_De_La_Orden === 'Cancelado' || order.Estado_De_La_Orden === 'Aprobado' || order.Estado_De_La_Orden === 'En proceso' || order.Estado_De_La_Orden === 'Entregado'}
+                            disabled={loading || order.Estado_De_La_Orden !== 'Pendiente'}
                             className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-colors disabled:opacity-50"
                         >
                             Cancelar Orden
@@ -401,7 +404,7 @@ const OrderDetails = () => {
                                                 <button
                                                     onClick={() => handleItemQuantityChange(detail.DetalleID, Math.max(1, detail.cantidad - 1))}
                                                     className="p-1 rounded-full hover:bg-gray-100"
-                                                    disabled={order.Estado_De_La_Orden === 'Cancelado' || order.Estado_De_La_Orden === 'Aprobado' || order.Estado_De_La_Orden === 'En proceso' || order.Estado_De_La_Orden === 'Entregado'}
+                                                    disabled={order.Estado_De_La_Orden !== 'Pendiente'}
                                                 >
                                                     <Minus className="w-4 h-4" />
                                                 </button>
@@ -409,7 +412,7 @@ const OrderDetails = () => {
                                                 <button
                                                     onClick={() => handleItemQuantityChange(detail.DetalleID, detail.cantidad + 1)}
                                                     className="p-1 rounded-full hover:bg-gray-100"
-                                                    disabled={order.Estado_De_La_Orden === 'Cancelado' || order.Estado_De_La_Orden === 'Aprobado' || order.Estado_De_La_Orden === 'En proceso' || order.Estado_De_La_Orden === 'Entregado'}
+                                                    disabled={order.Estado_De_La_Orden !== 'Pendiente'}
                                                 >
                                                     <Plus className="w-4 h-4" />
                                                 </button>
@@ -422,7 +425,7 @@ const OrderDetails = () => {
                                                 <button
                                                     onClick={() => handleRemoveItem(detail.DetalleID)}
                                                     className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                                                    disabled={loading || order.Estado_De_La_Orden === 'Entregado'}
+                                                    disabled={loading || order.Estado_De_La_Orden !== 'Pendiente'}
                                                 >
                                                     <Trash2 className="w-5 h-5" />
                                                 </button>

@@ -1,26 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import axios from 'axios'
 
 const OrderHistory = () => {
     const [orders, setOrders] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const apiURL = import.meta.env.VITE_API_URL
 
     useEffect(() => {
         const fetchOrders = async () => {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('token')
 
             if (!token) {
-                setError('No se encontró el token de autenticación');
-                setIsLoading(false);
-                return;
+                setError('No se encontró el token de autenticación')
+                setIsLoading(false)
+                return
             }
 
             try {
-                const response = await axios.get('http://localhost:1234/api/orders/client', {
+                const response = await axios.get(`${apiURL}/api/orders/client`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -29,52 +30,40 @@ const OrderHistory = () => {
 
                 setOrders(response.data.data);
             } catch (error) {
-                setError('Error al cargar el historial de órdenes: ' + error.message);
+                setError('Aún no cuenta con ordenes :D' + error.message)
             } finally {
-                setIsLoading(false);
+                setIsLoading(false)
             }
         };
 
-        fetchOrders();
-    }, []);
+        fetchOrders()
+    }, [])
 
     const handleCancelOrder = async (orderId) => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token')
         try {
             setLoading(true);
-            await axios.put(`http://localhost:1234/api/orders/cancel/${orderId}`, {}, {
+            await axios.put(`${apiURL}/api/orders/cancel/${orderId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success('Orden cancelada exitosamente');
             setOrders((prevOrders) => prevOrders.map(order =>
                 order.OrdenID === orderId ? { ...order, Estado_De_La_Orden: 'Cancelado' } : order
-            ));
+            ))
         } catch (error) {
             console.error('Error al cancelar la orden:', error);
-            toast.error('Error al cancelar la orden');
+            toast.error('Error al cancelar la orden')
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
-
-    const formatDate = (dateString) => {
-        try {
-            return new Date(dateString).toLocaleDateString('es-GT', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        } catch {
-            return dateString;
-        }
-    };
+    }
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('es-GT', {
             style: 'currency',
             currency: 'GTQ'
-        }).format(amount);
-    };
+        }).format(amount)
+    }
 
     const getStatusColor = (status) => {
         const statusColors = {
@@ -85,8 +74,8 @@ const OrderHistory = () => {
             'Enviado': 'bg-blue-200 text-blue-900',
             'En Proceso': 'bg-blue-100 text-blue-800'
         };
-        return statusColors[status] || 'bg-gray-100 text-gray-800';
-    };
+        return statusColors[status] || 'bg-gray-100 text-gray-800'
+    }
 
     if (isLoading) {
         return (
@@ -100,7 +89,7 @@ const OrderHistory = () => {
                     </div>
                 ))}
             </div>
-        );
+        )
     }
 
     if (error) {
@@ -191,7 +180,7 @@ const OrderHistory = () => {
                                     </div>
 
                                     {/* Botón de cancelar */}
-                                    {order.Estado_De_La_Orden !== 'Cancelado' && order.Estado_De_La_Orden !== 'Aprobado' && order.Estado_De_La_Orden !== 'En Proceso' && order.Estado_De_La_Orden !== 'Entregado' && (
+                                    {order.Estado_De_La_Orden === 'Pendiente' && (
                                         <button
                                             onClick={() => handleCancelOrder(order.OrdenID)}
                                             disabled={loading}

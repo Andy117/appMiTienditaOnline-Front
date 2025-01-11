@@ -5,23 +5,23 @@ const FormModal = ({ isOpen, onClose, onSubmit, formik, fields, title, type, dis
     useEffect(() => {
         const handleEscape = (e) => {
             if (e.key === 'Escape') onClose();
-        };
+        }
 
         if (isOpen) {
             document.addEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden'
         }
 
         return () => {
             document.removeEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'unset';
+            document.body.style.overflow = 'unset'
         };
-    }, [isOpen, onClose]);
+    }, [isOpen, onClose])
 
-    if (!isOpen) return null;
+    if (!isOpen) return null
 
     const handleBackdropClick = (e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) onClose()
     };
 
     return (
@@ -100,7 +100,7 @@ const FormModal = ({ isOpen, onClose, onSubmit, formik, fields, title, type, dis
                 </form>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default FormModal;
+export default FormModal

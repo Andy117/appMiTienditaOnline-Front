@@ -13,6 +13,7 @@ const schema = yup.object().shape({
 })
 
 const RegisterForm = ({ onSuccess, onClick, textBottom }) => {
+    const apiURL = import.meta.env.VITE_API_URL
     const {
         register,
         handleSubmit,
@@ -23,15 +24,14 @@ const RegisterForm = ({ onSuccess, onClick, textBottom }) => {
 
     const onSubmit = async (data) => {
         try {
-            const token =
-                await axios.post('http://localhost:1234/api/users', data)
+            await axios.post(`${apiURL}/api/users`, data)
             alert('Usuario registrado con éxito')
-            onSuccess();
+            onSuccess()
         } catch (error) {
             console.error('Error al registrar usuario:', error)
             alert('Hubo un error al registrar el usuario')
         }
-    };
+    }
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 mt-4">

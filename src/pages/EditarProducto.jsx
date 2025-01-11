@@ -19,17 +19,18 @@ const EditarProducto = () => {
     const [measures, setMeasures] = useState([])
     const [loading, setLoading] = useState(false)
     const [currentImage, setCurrentImage] = useState(null)
+    const apiURL = import.meta.env.VITE_API_URL
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem('token');
                 const [categoriesRes, brandsRes, presentationsRes, measuresRes, productRes] = await Promise.all([
-                    axios.get('http://localhost:1234/api/categories', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get('http://localhost:1234/api/brands', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get('http://localhost:1234/api/presentations', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get('http://localhost:1234/api/measures', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get(`http://localhost:1234/api/products/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${apiURL}/api/categories`, { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${apiURL}/api/brands`, { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${apiURL}/api/presentations`, { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${apiURL}/api/measures`, { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${apiURL}/api/products/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
                 ]);
 
                 setCategories(categoriesRes.data);
@@ -101,7 +102,7 @@ const EditarProducto = () => {
                 console.log('Datos a enviar:', Object.fromEntries(formData.entries()));
 
                 const token = localStorage.getItem('token')
-                await axios.put(`http://localhost:1234/api/products/${id}`, formData, {
+                await axios.put(`${apiURL}/api/products/${id}`, formData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'multipart/form-data',

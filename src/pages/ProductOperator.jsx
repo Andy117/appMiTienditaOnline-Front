@@ -11,15 +11,13 @@ const ProductTable = () => {
     const [totalProducts, setTotalProducts] = useState(0)
     const productsPerPage = 15
     const navigate = useNavigate()
-    const [deactivatingItem, setDeactivatingItem] = useState(null)
-    const [activatingItem, setActivatingItem] = useState(null)
-    const { id } = useParams()
+    const apiURL = import.meta.env.VITE_API_URL
 
     const fetchProducts = async (page = 1) => {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:1234/api/products/operator?page=${page}&limit=${productsPerPage}`, {
+            const response = await axios.get(`${apiURL}/api/products/operator?page=${page}&limit=${productsPerPage}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -37,7 +35,7 @@ const ProductTable = () => {
         if (window.confirm('Estas seguro que deseas activar este producto?')) {
             try {
                 const token = localStorage.getItem('token')
-                await axios.patch(`http://localhost:1234/api/products/activate/${id}`, {}, {
+                await axios.patch(`${apiURL}/api/products/activate/${id}`, {}, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
                 alert('Producto activado exitosamente...')
@@ -52,7 +50,7 @@ const ProductTable = () => {
         if (window.confirm('Estas seguro que deseas desactivar este producto?')) {
             try {
                 const token = localStorage.getItem('token')
-                await axios.patch(`http://localhost:1234/api/products/${id}`, {}, {
+                await axios.patch(`${apiURL}/api/products/${id}`, {}, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
                 alert('Producto desactivado exitosamente...')
@@ -230,7 +228,7 @@ const ProductTable = () => {
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default ProductTable;
+export default ProductTable

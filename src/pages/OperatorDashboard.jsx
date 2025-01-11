@@ -8,6 +8,7 @@ import AdminHeader from '../components/AdminHeader'
 const OperatorDashboard = () => {
     const [orders, setOrders] = useState([])
     const navigate = useNavigate()
+    const apiURL = import.meta.env.VITE_API_URL
 
     const getStatusColor = (status) => {
         const statusColors = {
@@ -26,7 +27,7 @@ const OperatorDashboard = () => {
         const fetchOrders = async () => {
             try {
                 const token = localStorage.getItem('token')
-                const response = await axios.get('http://localhost:1234/api/orders', {
+                const response = await axios.get(`${apiURL}/api/orders`, {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                 setOrders(response.data.data)

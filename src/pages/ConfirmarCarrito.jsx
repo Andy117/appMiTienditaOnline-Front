@@ -9,6 +9,7 @@ import TextInput from "../components/TextInput"
 import { X } from "lucide-react"
 
 const ConfirmarCarrito = () => {
+    const apiURL = import.meta.env.VITE_API_URL
     const [cart, setCart] = useState(() => {
         const savedCart = localStorage.getItem('cart')
         return savedCart ? JSON.parse(savedCart) : []
@@ -109,7 +110,7 @@ const ConfirmarCarrito = () => {
 
         try {
             await axios.post(
-                'http://localhost:1234/api/orders',
+                `${apiURL}/api/orders`,
                 {
                     usuarios_idUsuarios: userId,
                     nombreCompleto: userDetails.nombreCompleto,

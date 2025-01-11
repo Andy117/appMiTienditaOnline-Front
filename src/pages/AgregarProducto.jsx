@@ -17,6 +17,7 @@ const AgregarProducto = () => {
     const [loading, setLoading] = useState(false)
     const token = localStorage.getItem('token')
     const navigate = useNavigate()
+    const apiURL = import.meta.env.VITE_API_URL
 
     const validationSchema = Yup.object({
         idCategoriaProductos: Yup.number().required('Selecciona una categoria'),
@@ -35,10 +36,10 @@ const AgregarProducto = () => {
         const fetchData = async () => {
             try {
                 const [categoriesRes, brandsRes, presentationsRes, measuresRes] = await Promise.all([
-                    axios.get('http://localhost:1234/api/categories', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get('http://localhost:1234/api/brands', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get('http://localhost:1234/api/presentations', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get('http://localhost:1234/api/measures', { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${apiURL}/api/categories`, { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${apiURL}/api/brands`, { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${apiURL}/api/presentations`, { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${apiURL}/api/measures`, { headers: { Authorization: `Bearer ${token}` } }),
                 ])
                 setCategories(categoriesRes.data)
                 setBrands(brandsRes.data)
@@ -88,14 +89,14 @@ const AgregarProducto = () => {
                     })
                     formData.append('imagenProducto', values.imagenProducto)
 
-                    await axios.post('http://localhost:1234/api/products', formData, {
+                    await axios.post(`${apiURL}/api/products`, formData, {
                         headers: {
                             Authorization: `Bearer ${token}`,
                             "Content-Type": 'multipart/form-data'
                         }
                     })
                 } else {
-                    await axios.post('http://localhost:1234/api/products', productData, {
+                    await axios.post(`${apiURL}/api/products`, productData, {
                         headers: {
                             Authorization: `Bearer ${token}`,
                             "Content-Type": 'application/json'
