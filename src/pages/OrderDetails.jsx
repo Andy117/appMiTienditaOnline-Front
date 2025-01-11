@@ -5,7 +5,7 @@ import axios from "axios"
 import { ChevronLeft, Plus, Minus, Trash2, Save, X } from "lucide-react"
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import TextInput from "./TextInput"
+import TextInput from "../components/TextInput"
 
 const OrderDetails = () => {
     const navigate = useNavigate()
@@ -422,6 +422,7 @@ const OrderDetails = () => {
                                                 <button
                                                     onClick={() => handleRemoveItem(detail.DetalleID)}
                                                     className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                                                    disabled={loading || order.Estado_De_La_Orden === 'Entregado'}
                                                 >
                                                     <Trash2 className="w-5 h-5" />
                                                 </button>

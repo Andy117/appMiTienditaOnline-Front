@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Plus, ChevronLeftCircle, Edit, CheckCircle, Trash } from 'lucide-react'
-import AdminHeader from './AdminHeader'
+import AdminHeader from '../components/AdminHeader';
 
 const ProductTable = () => {
     const [products, setProducts] = useState([])
