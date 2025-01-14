@@ -27,7 +27,7 @@ const Login = () => {
             login(token)
 
             const decodedToken = decodeBase64(token.split('.')[1])
-            console.log(decodedToken)
+
             navigate(decodedToken.rol_id === 1 ? '/inicio' : '/cliente')
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado.'

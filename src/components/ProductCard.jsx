@@ -30,7 +30,7 @@ const ProductCard = ({ product, onAddToCart }) => {
                 <img
                     src={product.imagen_producto ? `data:image/jpeg;base64,${product.imagen_producto}` : '/defaultProduct.jpg'}
                     alt={product.nombre}
-                    className={`w-full h-48 object-cover rounded-t ${loading ? 'blur-sm' : ''}`}
+                    className={`w-full h-auto object-cover rounded-t ${loading ? 'blur-sm' : ''}`}
                     onLoad={() => setLoading(false)}
                     onError={(e) => {
                         e.target.onerror = null;

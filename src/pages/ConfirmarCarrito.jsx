@@ -122,9 +122,8 @@ const ConfirmarCarrito = () => {
                     DetallesJSON: orderDetails
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
-            );
+            )
 
-            toast.success('¡Orden confirmada exitosamente!')
             alert('¡Orden confirmada exitosamente!')
             localStorage.removeItem('cart')
             setCart([]);
@@ -147,10 +146,6 @@ const ConfirmarCarrito = () => {
         }))
     }
 
-    const handleReturnToPurchase = () => {
-        navigate('/cliente')
-    }
-
     const handleRemoveItem = (itemToRemove) => {
         setCart(prevCart => prevCart.filter(item => item.idProductos !== itemToRemove.idProductos))
     }
@@ -159,7 +154,7 @@ const ConfirmarCarrito = () => {
 
     return (
         <div className="container mx-auto py-8 px-4 max-w-3xl">
-            <ToastContainer position="top-right" autoClose={3000} />
+            <ToastContainer position="top-right" autoClose={3000} richColors closeButton />
             <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Confirmar Pedido</h1>
 
             {cart.length === 0 ? (

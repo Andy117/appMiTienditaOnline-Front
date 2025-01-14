@@ -97,9 +97,8 @@ const EditarProducto = () => {
                     if (key !== 'imagenProducto') {
                         formData.append(key, values[key])
                     }
-                });
+                })
 
-                console.log('Datos a enviar:', Object.fromEntries(formData.entries()));
 
                 const token = localStorage.getItem('token')
                 await axios.put(`${apiURL}/api/products/${id}`, formData, {
@@ -107,7 +106,7 @@ const EditarProducto = () => {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'multipart/form-data',
                     },
-                });
+                })
 
                 alert('Producto actualizado con éxito')
                 location.reload()

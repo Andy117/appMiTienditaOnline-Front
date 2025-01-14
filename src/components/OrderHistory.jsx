@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { toast, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+//import { toast } from 'react-toastify'
+//import 'react-toastify/dist/ReactToastify.css'
+import { toast } from 'sonner'
 import axios from 'axios'
 
 const OrderHistory = () => {
@@ -28,9 +29,9 @@ const OrderHistory = () => {
                     },
                 });
 
-                setOrders(response.data.data);
+                setOrders(response.data.data)
             } catch (error) {
-                setError('Aún no cuenta con ordenes :D' + error.message)
+                setError('Aún no cuenta con ordenes :D')
             } finally {
                 setIsLoading(false)
             }
@@ -107,7 +108,6 @@ const OrderHistory = () => {
 
     return (
         <div className="max-w-4xl mx-auto mt-8">
-            <ToastContainer position="top-right" autoClose={3000} />
             <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-center mb-6">
                     <svg className="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,7 +196,7 @@ const OrderHistory = () => {
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default OrderHistory;
+export default OrderHistory

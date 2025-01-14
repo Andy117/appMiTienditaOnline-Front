@@ -3,8 +3,9 @@ import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import axios from "axios"
 import { ChevronLeft, Plus, Minus, Trash2, Save, X } from "lucide-react"
-import { toast, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+//import { toast, ToastContainer } from 'react-toastify'
+//import 'react-toastify/dist/ReactToastify.css'
+import { toast, Toaster } from "sonner"
 import TextInput from "../components/TextInput"
 
 const OrderDetails = () => {
@@ -255,7 +256,7 @@ const OrderDetails = () => {
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-7xl">
-            <ToastContainer position="top-right" autoClose={3000} />
+            <Toaster position="top-right" autoClose={3000} richColors closeButton />
 
             {/* Encabezado con botón de retorno */}
             <div className="flex items-center justify-between mb-8">

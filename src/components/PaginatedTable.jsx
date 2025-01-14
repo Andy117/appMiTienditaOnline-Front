@@ -1,7 +1,8 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, KeyRound, Pencil, Power, Trash, User, UserCog } from 'lucide-react';
-import { toast, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+//import { toast, ToastContainer } from 'react-toastify'
+//import 'react-toastify/dist/ReactToastify.css'
+import { toast, Toaster } from 'sonner'
 import axios from 'axios';
 
 const PaginatedTable = ({
@@ -52,11 +53,11 @@ const PaginatedTable = ({
         try {
             await axios.patch(`${apiURL}/api/users/changeToAdmin/${id}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
-            });
-            toast.success('Rol cambiado a Administrador con éxito');
+            })
+            toast.success('Rol cambiado a Administrador con éxito')
         } catch (error) {
-            console.error('Error al cambiar a Administrador:', error);
-            toast.error('Hubo un error al cambiar el rol a Administrador.');
+            console.error('Error al cambiar a Administrador:', error)
+            toast.error('Hubo un error al cambiar el rol a Administrador.')
         }
     };
 
@@ -65,17 +66,17 @@ const PaginatedTable = ({
         try {
             await axios.patch(`${apiURL}/api/users/changeToClient/${id}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
-            });
-            toast.success('Rol cambiado a Cliente con éxito');
+            })
+            toast.success('Rol cambiado a Cliente con éxito')
         } catch (error) {
             console.error('Error al cambiar a Cliente:', error);
-            toast.error('Hubo un error al cambiar el rol a Cliente.');
+            toast.error('Hubo un error al cambiar el rol a Cliente.')
         }
-    };
+    }
 
     return (
         <div className="w-full">
-            <ToastContainer position="top-right" autoClose={3000} />
+            <Toaster position="top-right" autoClose={3000} richColors closeButton />
 
             <div className="overflow-x-auto rounded-lg border border-gray-200">
                 <table className="min-w-full divide-y divide-gray-200">

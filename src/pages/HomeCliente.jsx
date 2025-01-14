@@ -8,8 +8,9 @@ import axios from "axios"
 import { jwtDecode } from "jwt-decode"
 import { LogOut, ShoppingCart, User } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { toast, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+//import { toast, ToastContainer } from 'react-toastify'
+//import 'react-toastify/dist/ReactToastify.css'
+import { Toaster, toast } from "sonner"
 
 const HomeCliente = () => {
     const apiURL = import.meta.env.VITE_API_URL
@@ -131,8 +132,7 @@ const HomeCliente = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <ToastContainer position="top-right" autoClose={3000} />
-
+            <Toaster position="top-right" autoClose={3000} richColors closeButton />
             <header className="bg-white shadow-md">
                 <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                     <div className="flex items-center space-x-4">
