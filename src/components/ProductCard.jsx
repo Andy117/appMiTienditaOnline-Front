@@ -25,12 +25,12 @@ const ProductCard = ({ product, onAddToCart }) => {
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-md border p-4 transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-            <div className="relative">
+        <div className="bg-white rounded-lg shadow-md border p-4 transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex-1 flex flex-col justify-between">
+            <div className="relative w-full h-50">
                 <img
                     src={product.imagen_producto ? `data:image/jpeg;base64,${product.imagen_producto}` : '/defaultProduct.jpg'}
                     alt={product.nombre}
-                    className={`w-full h-auto object-cover rounded-t ${loading ? 'blur-sm' : ''}`}
+                    className={`w-full h-full object-cover rounded-t ${loading ? 'blur-sm' : ''}`}
                     onLoad={() => setLoading(false)}
                     onError={(e) => {
                         e.target.onerror = null;
@@ -48,7 +48,7 @@ const ProductCard = ({ product, onAddToCart }) => {
                     </span>
                 )}
             </div>
-            <div className="mt-4 space-y-3">
+            <div className="flex-1 flex flex-col justify-between mt-4">
                 <h3 className="text-lg font-bold text-gray-800 line-clamp-2">{product.nombre}</h3>
                 <p className="text-sm text-gray-600 line-clamp-2">{product.descripcion}</p>
                 <p className="text-xl font-semibold text-green-600">Q.{product.precio}</p>
@@ -67,14 +67,14 @@ const ProductCard = ({ product, onAddToCart }) => {
                                 onClick={handleDecreaseQuantity}
                                 className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-l"
                             >
-                                <Minus size={16} />
+                                <Minus size={14} />
                             </button>
-                            <span className="px-3 text-sm">{quantity}</span>
+                            <span className="px-2 text-sm">{quantity}</span>
                             <button
                                 onClick={handleIncreaseQuantity}
                                 className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-r"
                             >
-                                <Plus size={16} />
+                                <Plus size={14} />
                             </button>
                         </div>
                     )}
