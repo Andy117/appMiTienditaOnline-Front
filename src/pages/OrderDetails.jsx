@@ -279,6 +279,7 @@ const OrderDetails = () => {
                             id="nombreCompleto"
                             name="nombreCompleto"
                             type="text"
+                            disabled={loading || order.Estado_De_La_Orden !== 'Pendiente'}
                             placeholder="Ingresa el nombre de quien recibe la orden"
                             value={userDetails.nombreCompleto}
                             onChange={handleInputChange}
@@ -290,6 +291,7 @@ const OrderDetails = () => {
                             id="direccionOrden"
                             name="direccionOrden"
                             type="text"
+                            disabled={loading || order.Estado_De_La_Orden !== 'Pendiente'}
                             placeholder="Ingresa la dirección de entrega"
                             value={userDetails.direccionOrden}
                             onChange={handleInputChange}
@@ -303,6 +305,7 @@ const OrderDetails = () => {
                             id="telefonoOrden"
                             name="telefonoOrden"
                             type="tel"
+                            disabled={loading || order.Estado_De_La_Orden !== 'Pendiente'}
                             placeholder="Ingresa un número de teléfono"
                             value={userDetails.telefonoOrden}
                             onChange={handleInputChange}
@@ -314,6 +317,7 @@ const OrderDetails = () => {
                             id="correoElectronicoOrden"
                             name="correoElectronicoOrden"
                             type="email"
+                            disabled={loading || order.Estado_De_La_Orden !== 'Pendiente'}
                             placeholder="Ingresa tu correo electrónico"
                             value={userDetails.correoElectronicoOrden}
                             onChange={handleInputChange}
