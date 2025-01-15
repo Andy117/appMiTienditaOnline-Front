@@ -1,6 +1,6 @@
 import React from "react"
 
-const TextInput = ({ label, id, name, type = 'text', placeholder, min, value, onChange, error }) => {
+const TextInput = ({ label, id, name, type = 'text', placeholder, min, value, onChange, error, disabled = false }) => {
     return (
         <div>
             <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
@@ -11,6 +11,7 @@ const TextInput = ({ label, id, name, type = 'text', placeholder, min, value, on
                 name={name}
                 type={type}
                 min={min}
+                disabled={disabled}
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
