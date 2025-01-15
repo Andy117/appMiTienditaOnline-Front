@@ -29,7 +29,13 @@ const RegisterForm = ({ onSuccess, onClick, textBottom }) => {
             onSuccess()
         } catch (error) {
             console.error('Error al registrar usuario:', error)
-            alert('Hubo un error al registrar el usuario')
+            if (error.response) {
+                alert(`Error: ${error.response.data.message || 'Hubo un error al registrar el usuario'}`)
+            } else if (error.request) {
+                alert('No se recibió respuesta del servidor.')
+            } else {
+                alert(`Error: ${error.message}`)
+            }
         }
     }
 
