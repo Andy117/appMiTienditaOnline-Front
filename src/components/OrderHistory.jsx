@@ -107,7 +107,7 @@ const OrderHistory = () => {
     }
 
     return (
-        <div className="max-w-4xl mx-auto mt-8">
+        <div className="max-w-4xl mx-auto mt-8 mb-8">
             <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-center mb-6">
                     <svg className="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
