@@ -41,7 +41,7 @@ const HomeCliente = () => {
             const response = await axios.get(`${apiURL}/api/products`, {
                 params: {
                     page,
-                    limit: 12,
+                    limit: 16,
                     category: category || undefined,
                     search: search || undefined
                 },
@@ -59,13 +59,7 @@ const HomeCliente = () => {
         }
     }, [token])
 
-    useEffect(() => {
-        fetchProducts(currentPage, selectedCategory, searchTerm)
-    }, [currentPage, selectedCategory, searchTerm, fetchProducts])
 
-    useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cart))
-    }, [cart])
 
     const addToCart = (product, quantity = 1) => {
         if (product.stock < quantity) {
@@ -129,6 +123,14 @@ const HomeCliente = () => {
             )
         )
     }
+
+    useEffect(() => {
+        fetchProducts(currentPage, selectedCategory, searchTerm)
+    }, [currentPage, selectedCategory, searchTerm, fetchProducts])
+
+    useEffect(() => {
+        localStorage.setItem('cart', JSON.stringify(cart))
+    }, [cart])
 
     return (
         <div className="min-h-screen bg-gray-50">
