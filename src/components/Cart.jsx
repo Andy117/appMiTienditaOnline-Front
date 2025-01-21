@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Cart = ({ cart, onClearCart, onUpdateQuantity, onRemoveItem, isOpen, onClose }) => {
     const navigate = useNavigate()
+
     const total = cart.reduce((sum, item) => sum + item.precio * item.cantidad, 0)
 
     const handleContinueToOrder = () => {
